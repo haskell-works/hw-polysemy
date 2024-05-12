@@ -25,7 +25,7 @@ jobs:
 
     env:
       # Modify this value to "invalidate" the cabal cache.
-      CABAL_CACHE_VERSION: "2024-05-10"
+      CABAL_CACHE_VERSION: "hw-polysemy/2024-05-12"
 
     steps:
       - uses: actions/checkout@v2
