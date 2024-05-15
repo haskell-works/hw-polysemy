@@ -1,4 +1,4 @@
-module HaskellWorks.Polysemy.Either
+module HaskellWorks.Polysemy.Data.Either
   ( onLeftThrow
   ) where
 

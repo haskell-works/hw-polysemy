@@ -1,4 +1,4 @@
-module HaskellWorks.Polysemy.Text.Strict
+module HaskellWorks.Polysemy.Data.Text.Strict
   ( T.Text
 
   -- * Creation and elimination

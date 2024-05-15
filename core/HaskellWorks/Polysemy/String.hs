@@ -1,4 +1,4 @@
-module HaskellWorks.Polysemy.Data.String
+module HaskellWorks.Polysemy.String
   ( ToString(..)
   ) where
 

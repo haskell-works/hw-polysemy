@@ -1,4 +1,4 @@
-module HaskellWorks.Polysemy.Text
+module HaskellWorks.Polysemy.Data.Text
   ( Text
 
   -- * Creation and elimination
@@ -141,4 +141,4 @@ module HaskellWorks.Polysemy.Text
 
   ) where
 
-import           HaskellWorks.Polysemy.Text.Strict
+import           HaskellWorks.Polysemy.Data.Text.Strict
