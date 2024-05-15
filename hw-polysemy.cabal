@@ -33,6 +33,8 @@ common tasty-hedgehog             { build-depends: tasty-hedgehog               
 common text                       { build-depends: text                                        < 3      }
 
 common hw-polysemy                { build-depends: hw-polysemy                                          }
+common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
+common hw-polysemy-hedgehog       { build-depends: hw-polysemy:hedgehog                                 }
 
 common project-config
   import:               polysemy,
@@ -48,7 +50,7 @@ common project-config
   ghc-options:          -Wall
                         -fplugin=Polysemy.Plugin
 
-library
+library core
   import:               base, project-config,
                         bytestring,
                         contravariant,
@@ -59,6 +61,7 @@ library
                         polysemy-log,
                         polysemy-time,
                         text,
+  visibility:           public
   exposed-modules:      HaskellWorks.Polysemy
                         HaskellWorks.Polysemy.ByteString
                         HaskellWorks.Polysemy.ByteString.Lazy
@@ -66,7 +69,28 @@ library
                         HaskellWorks.Polysemy.Data.String
                         HaskellWorks.Polysemy.Either
                         HaskellWorks.Polysemy.Error
-                        HaskellWorks.Polysemy.Hedgehog
+                        HaskellWorks.Polysemy.Prelude
+                        HaskellWorks.Polysemy.Text
+                        HaskellWorks.Polysemy.Text.Lazy
+                        HaskellWorks.Polysemy.Text.Strict
+                        HaskellWorks.Polysemy.IO
+  hs-source-dirs:       core
+  default-language:     GHC2021
+
+library hedgehog
+  import:               base, project-config,
+                        bytestring,
+                        contravariant,
+                        filepath,
+                        ghc-prim,
+                        hedgehog,
+                        hw-polysemy-core,
+                        polysemy,
+                        polysemy-log,
+                        polysemy-time,
+                        text,
+  visibility:           public
+  exposed-modules:      HaskellWorks.Polysemy.Hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Assert
                         HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal
@@ -74,12 +98,33 @@ library
                         HaskellWorks.Polysemy.Hedgehog.Eval
                         HaskellWorks.Polysemy.Hedgehog.Jot
                         HaskellWorks.Polysemy.Hedgehog.Property
-                        HaskellWorks.Polysemy.Prelude
-                        HaskellWorks.Polysemy.Text
-                        HaskellWorks.Polysemy.Text.Lazy
-                        HaskellWorks.Polysemy.Text.Strict
-                        HaskellWorks.Polysemy.IO
-  hs-source-dirs:       src
+  hs-source-dirs:       hedgehog
+  default-language:     GHC2021
+
+library
+  import:               base, project-config,
+                        hw-polysemy-core,
+                        hw-polysemy-hedgehog,
+  reexported-modules:   HaskellWorks.Polysemy,
+                        HaskellWorks.Polysemy.ByteString,
+                        HaskellWorks.Polysemy.ByteString.Lazy,
+                        HaskellWorks.Polysemy.ByteString.Strict,
+                        HaskellWorks.Polysemy.Data.String,
+                        HaskellWorks.Polysemy.Either,
+                        HaskellWorks.Polysemy.Error,
+                        HaskellWorks.Polysemy.Hedgehog,
+                        HaskellWorks.Polysemy.Hedgehog.Assert,
+                        HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog,
+                        HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal,
+                        HaskellWorks.Polysemy.Hedgehog.Effect.Log,
+                        HaskellWorks.Polysemy.Hedgehog.Eval,
+                        HaskellWorks.Polysemy.Hedgehog.Jot,
+                        HaskellWorks.Polysemy.Hedgehog.Property,
+                        HaskellWorks.Polysemy.Prelude,
+                        HaskellWorks.Polysemy.Text,
+                        HaskellWorks.Polysemy.Text.Lazy,
+                        HaskellWorks.Polysemy.Text.Strict,
+                        HaskellWorks.Polysemy.IO,
   default-language:     GHC2021
 
 test-suite hw-polysemy-test
