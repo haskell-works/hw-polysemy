@@ -1,13 +1,14 @@
 module HaskellWorks.Polysemy.Hedgehog.Assert
-  ( leftFail
-  , leftFailM
-  , requireHead
-  , catchFail
-  , evalIO
-  , failure
-  , failMessage
+  ( Hedgehog,
+    leftFail,
+    leftFailM,
+    requireHead,
+    catchFail,
+    evalIO,
+    failure,
+    failMessage,
 
-  , (===)
+    (===),
 
   ) where
 

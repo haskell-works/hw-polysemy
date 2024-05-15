@@ -37,8 +37,8 @@ import           HaskellWorks.Polysemy.Prelude
 import qualified Hedgehog.Internal.Property                     as H
 import qualified Hedgehog.Internal.Source                       as H
 
-import           HaskellWorks.Polysemy.Data.String
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
+import           HaskellWorks.Polysemy.String
 import           Polysemy
 
 -- | Annotate the given string at the context supplied by the callstack.

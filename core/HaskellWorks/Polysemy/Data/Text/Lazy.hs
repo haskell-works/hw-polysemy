@@ -1,4 +1,4 @@
-module HaskellWorks.Polysemy.Text.Lazy
+module HaskellWorks.Polysemy.Data.Text.Lazy
   ( LT.Text
 
   -- * Creation and elimination
