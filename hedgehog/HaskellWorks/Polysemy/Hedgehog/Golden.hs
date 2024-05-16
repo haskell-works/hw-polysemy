@@ -23,7 +23,6 @@ import           System.FilePath                               (takeDirectory)
 
 import qualified Control.Concurrent.QSem                       as IO
 import qualified Data.List                                     as List
-import qualified GHC.Stack                                     as GHC
 import qualified HaskellWorks.Polysemy.Control.Concurrent.QSem as PIO
 import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory        as PIO
@@ -57,6 +56,7 @@ recreateGoldenFiles = IO.unsafePerformIO $ do
   return $ value == Just "1"
 
 writeGoldenFile :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
   => Member (Error IOException) r
@@ -64,19 +64,20 @@ writeGoldenFile :: ()
   => FilePath
   -> String
   -> Sem r ()
-writeGoldenFile goldenFile actualContent = do
+writeGoldenFile goldenFile actualContent = withFrozenCallStack $ do
   jot_ $ "Creating golden file " <> goldenFile
   PIO.createDirectoryIfMissing True (takeDirectory goldenFile)
   PIO.writeFile goldenFile actualContent
 
 reportGoldenFileMissing :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
   => Member (Error IOException) r
   => Member Log r
   => FilePath
   -> Sem r ()
-reportGoldenFileMissing goldenFile = do
+reportGoldenFileMissing goldenFile = withFrozenCallStack $ do
   jot_ $ unlines
     [ "Golden file " <> goldenFile <> " does not exist."
     , "To create it, run with CREATE_GOLDEN_FILES=1."
@@ -85,6 +86,7 @@ reportGoldenFileMissing goldenFile = do
   failure
 
 checkAgainstGoldenFile :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
   => Member (Error IOException) r
@@ -92,7 +94,7 @@ checkAgainstGoldenFile :: ()
   => FilePath
   -> [String]
   -> Sem r ()
-checkAgainstGoldenFile goldenFile actualLines = do
+checkAgainstGoldenFile goldenFile actualLines = withFrozenCallStack $ do
   referenceLines <- List.lines <$> PIO.readFile goldenFile
   let difference = getGroupedDiff actualLines referenceLines
   case difference of
@@ -130,7 +132,7 @@ diffVsGoldenFile :: ()
   => String   -- ^ Actual content
   -> FilePath -- ^ Reference file
   -> Sem r ()
-diffVsGoldenFile actualContent goldenFile = GHC.withFrozenCallStack $ do
+diffVsGoldenFile actualContent goldenFile = withFrozenCallStack $ do
   forM_ mGoldenFileLogFile $ \logFile ->
     PIO.bracketQSem sem $ PIO.appendFile logFile $ goldenFile <> "\n"
 
@@ -166,6 +168,6 @@ diffFileVsGoldenFile :: ()
   => FilePath -- ^ Actual file
   -> FilePath -- ^ Reference file
   -> Sem r ()
-diffFileVsGoldenFile actualFile referenceFile = GHC.withFrozenCallStack $ do
+diffFileVsGoldenFile actualFile referenceFile = withFrozenCallStack $ do
   contents <- PIO.readFile actualFile
   diffVsGoldenFile contents referenceFile
