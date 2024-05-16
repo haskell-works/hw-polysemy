@@ -63,6 +63,8 @@ module HaskellWorks.Polysemy.Prelude
   , ($!)
   , ($)
   , (&)
+  , (&&)
+  , (||)
   , (.)
   , (</>)
 
