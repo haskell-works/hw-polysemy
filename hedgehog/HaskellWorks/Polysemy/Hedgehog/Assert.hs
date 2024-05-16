@@ -33,6 +33,7 @@ import           Data.Aeson                                     (Value)
 import           Data.Generics.Product.Any
 import qualified Data.List                                      as L
 import qualified GHC.Stack                                      as GHC
+import           HaskellWorks.Polysemy.Error
 import           HaskellWorks.Polysemy.File
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 import           HaskellWorks.Polysemy.Prelude
@@ -144,15 +145,6 @@ assertPidOk :: ()
   -> Sem r Pid
 assertPidOk hProcess = withFrozenCallStack $
   nothingFailM $ getPid hProcess
-
-trap :: forall e r a. ()
-  => (e -> Sem r a)
-  -> Sem (Error e ': r) a
-  -> Sem r a
-trap h f =
-  runError f >>= \case
-    Left e  -> h e
-    Right a -> pure a
 
 -- | Assert the 'filePath' can be parsed as JSON.
 assertIsJsonFile_ :: ()
