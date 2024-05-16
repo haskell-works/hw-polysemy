@@ -20,7 +20,7 @@ hprop_example = propertyOnce $ do
   let projectRoot = "."
 
   contents <- T.readFile (projectRoot </> "LICENSE")
-    & catchFail @IOException
+    & trapFail @IOException
 
   line1 <- T.lines contents
     & L.dropWhile T.null

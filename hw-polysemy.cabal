@@ -19,23 +19,31 @@ source-repository head
 
 common base                       { build-depends: base                       >= 4.18       && < 5      }
 
+common aeson                      { build-depends: aeson                                       < 2.3    }
+common async                      { build-depends: async                                       < 2.3    }
 common bytestring                 { build-depends: bytestring                                  < 0.13   }
 common contravariant              { build-depends: contravariant                               < 1.6    }
 common Diff                       { build-depends: Diff                                        < 0.6    }
 common directory                  { build-depends: directory                                   < 1.4    }
 common filepath                   { build-depends: filepath                                    < 1.6    }
+common generic-lens               { build-depends: generic-lens                                < 2.3    }
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.12   }
 common hedgehog                   { build-depends: hedgehog                                    < 1.5    }
+common network                    { build-depends: network                                     < 3.3    }
+common lens                       { build-depends: lens                                        < 5.4    }
 common polysemy                   { build-depends: polysemy                                    < 2      }
 common polysemy-log               { build-depends: polysemy-log                                < 0.11   }
 common polysemy-plugin            { build-depends: polysemy-plugin                             < 0.5    }
 common polysemy-time              { build-depends: polysemy-time                               < 0.7    }
 common process                    { build-depends: process                                     < 1.7    }
+common resourcet                  { build-depends: resourcet                                   < 1.4    }
 common stm                        { build-depends: stm                                         < 2.6    }
 common tasty                      { build-depends: tasty                                       < 1.6    }
 common tasty-hedgehog             { build-depends: tasty-hedgehog                              < 1.5    }
 common text                       { build-depends: text                                        < 3      }
 common time                       { build-depends: time                                        < 2      }
+common unliftio                   { build-depends: unliftio                                    < 0.3    }
+common yaml                       { build-depends: yaml                                        < 0.12   }
 
 common hw-polysemy                { build-depends: hw-polysemy                                          }
 common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
@@ -57,21 +65,40 @@ common project-config
 
 library core
   import:               base, project-config,
+                        aeson,
+                        async,
                         bytestring,
                         contravariant,
                         directory,
                         filepath,
+                        generic-lens,
                         ghc-prim,
                         hedgehog,
+                        lens,
+                        network,
                         polysemy,
                         polysemy-log,
                         polysemy-time,
                         process,
+                        resourcet,
                         stm,
                         text,
                         time,
+                        unliftio,
+                        yaml,
   visibility:           public
-  exposed-modules:      HaskellWorks.Polysemy
+
+  if os(windows)
+    exposed-modules:    HaskellWorks.IO.Win32.NamedPipe
+
+  exposed-modules:      HaskellWorks.IO.Network
+                        HaskellWorks.IO.Network.NamedPipe
+                        HaskellWorks.IO.Network.Port
+                        HaskellWorks.IO.Network.Socket
+                        HaskellWorks.IO.Process
+                        HaskellWorks.Polysemy
+                        HaskellWorks.Polysemy.Cabal
+                        HaskellWorks.Polysemy.Cabal.Types
                         HaskellWorks.Polysemy.Control.Concurrent
                         HaskellWorks.Polysemy.Control.Concurrent.QSem
                         HaskellWorks.Polysemy.Control.Concurrent.STM
@@ -84,6 +111,10 @@ library core
                         HaskellWorks.Polysemy.Data.Text.Lazy
                         HaskellWorks.Polysemy.Data.Text.Strict
                         HaskellWorks.Polysemy.Error
+                        HaskellWorks.Polysemy.Error.Types
+                        HaskellWorks.Polysemy.File
+                        HaskellWorks.Polysemy.FilePath
+                        HaskellWorks.Polysemy.OS
                         HaskellWorks.Polysemy.Prelude
                         HaskellWorks.Polysemy.String
                         HaskellWorks.Polysemy.System.Directory
@@ -95,16 +126,21 @@ library core
 
 library hedgehog
   import:               base, project-config,
+                        aeson,
+                        async,
                         bytestring,
                         contravariant,
                         Diff,
                         filepath,
+                        generic-lens,
                         ghc-prim,
                         hedgehog,
                         hw-polysemy-core,
-                        polysemy,
+                        lens,
                         polysemy-log,
                         polysemy-time,
+                        polysemy,
+                        process,
                         text,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Hedgehog
@@ -115,6 +151,8 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Eval
                         HaskellWorks.Polysemy.Hedgehog.Golden
                         HaskellWorks.Polysemy.Hedgehog.Jot
+                        HaskellWorks.Polysemy.Hedgehog.Process
+                        HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
   hs-source-dirs:       hedgehog
   default-language:     GHC2021
@@ -123,7 +161,12 @@ library
   import:               base, project-config,
                         hw-polysemy-core,
                         hw-polysemy-hedgehog,
-  reexported-modules:   HaskellWorks.Polysemy,
+  reexported-modules:   HaskellWorks.IO.Network,
+                        HaskellWorks.IO.Network.NamedPipe,
+                        HaskellWorks.IO.Network.Port,
+                        HaskellWorks.Polysemy,
+                        HaskellWorks.Polysemy.Cabal,
+                        HaskellWorks.Polysemy.Cabal.Types,
                         HaskellWorks.Polysemy.Control.Concurrent,
                         HaskellWorks.Polysemy.Control.Concurrent.QSem,
                         HaskellWorks.Polysemy.Control.Concurrent.STM,
@@ -136,6 +179,9 @@ library
                         HaskellWorks.Polysemy.Data.Text.Lazy,
                         HaskellWorks.Polysemy.Data.Text.Strict,
                         HaskellWorks.Polysemy.Error,
+                        HaskellWorks.Polysemy.Error.Types,
+                        HaskellWorks.Polysemy.FilePath,
+                        HaskellWorks.Polysemy.OS,
                         HaskellWorks.Polysemy.Hedgehog,
                         HaskellWorks.Polysemy.Hedgehog.Assert,
                         HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog,
@@ -144,6 +190,8 @@ library
                         HaskellWorks.Polysemy.Hedgehog.Eval,
                         HaskellWorks.Polysemy.Hedgehog.Golden,
                         HaskellWorks.Polysemy.Hedgehog.Jot,
+                        HaskellWorks.Polysemy.Hedgehog.Process,
+                        HaskellWorks.Polysemy.Hedgehog.Process.Internal,
                         HaskellWorks.Polysemy.Hedgehog.Property,
                         HaskellWorks.Polysemy.Prelude,
                         HaskellWorks.Polysemy.String,
