@@ -40,6 +40,7 @@ common resourcet                  { build-depends: resourcet                    
 common stm                        { build-depends: stm                                         < 2.6    }
 common tasty                      { build-depends: tasty                                       < 1.6    }
 common tasty-hedgehog             { build-depends: tasty-hedgehog                              < 1.5    }
+common temporary                  { build-depends: temporary                                   < 1.4    }
 common text                       { build-depends: text                                        < 3      }
 common time                       { build-depends: time                                        < 2      }
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
@@ -83,6 +84,7 @@ library core
                         resourcet,
                         stm,
                         text,
+                        temporary,
                         time,
                         unliftio,
                         yaml,
@@ -116,10 +118,12 @@ library core
                         HaskellWorks.Polysemy.FilePath
                         HaskellWorks.Polysemy.OS
                         HaskellWorks.Polysemy.Prelude
+                        HaskellWorks.Polysemy.Stack
                         HaskellWorks.Polysemy.String
                         HaskellWorks.Polysemy.System.Directory
                         HaskellWorks.Polysemy.System.Environment
                         HaskellWorks.Polysemy.System.IO
+                        HaskellWorks.Polysemy.System.IO.Temp
                         HaskellWorks.Polysemy.System.Process
   hs-source-dirs:       core
   default-language:     GHC2021
@@ -154,6 +158,7 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Process
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
+                        HaskellWorks.Polysemy.Hedgehog.Workspace
   hs-source-dirs:       hedgehog
   default-language:     GHC2021
 
@@ -193,6 +198,7 @@ library
                         HaskellWorks.Polysemy.Hedgehog.Process,
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal,
                         HaskellWorks.Polysemy.Hedgehog.Property,
+                        HaskellWorks.Polysemy.Hedgehog.Workspace,
                         HaskellWorks.Polysemy.Prelude,
                         HaskellWorks.Polysemy.String,
                         HaskellWorks.Polysemy.System.Directory,
