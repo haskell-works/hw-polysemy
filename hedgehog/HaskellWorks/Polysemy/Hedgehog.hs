@@ -1,50 +1,64 @@
 
 module HaskellWorks.Polysemy.Hedgehog
-  ( propertyOnce
+  ( propertyOnce,
 
-  , Hedgehog
+    Hedgehog,
 
-  , hedgehogToIntegrationFinal
-  , interpretDataLogHedgehog
+    hedgehogToIntegrationFinal,
+    interpretDataLogHedgehog,
 
-  , leftFail
-  , leftFailM
-  , catchFail
+    leftFail,
+    leftFailM,
+    catchFail,
 
-  , failure
-  , failMessage
-  , (===)
+    failure,
+    failMessage,
+    (===),
 
-  , eval
-  , evalIO
-  , evalM
-  , evalIO_
-  , evalM_
+    eval,
+    evalM,
+    evalIO,
+    writeLog,
+    failWith,
+    failWithCustom,
+    evalIO_,
+    evalM_,
 
-  , jotShow
-  , jotShow_
-  , jotWithCallstack
-  , jot
-  , jot_
-  , jotText_
-  , jotM
-  , jotM_
-  , jotBsUtf8M
-  , jotLbsUtf8M
-  , jotIO
-  , jotIO_
-  , jotShowM
-  , jotShowM_
-  , jotShowIO
-  , jotShowIO_
-  , jotEach
-  , jotEach_
-  , jotEachM
-  , jotEachM_
-  , jotEachIO
-  , jotEachIO_
+    jotShow,
+    jotShow_,
+    jotWithCallstack,
+    jot,
+    jot_,
+    jotText_,
+    jotM,
+    jotM_,
+    jotBsUtf8M,
+    jotLbsUtf8M,
+    jotIO,
+    jotIO_,
+    jotShowM,
+    jotShowM_,
+    jotShowIO,
+    jotShowIO_,
+    jotEach,
+    jotEach_,
+    jotEachM,
+    jotEachM_,
+    jotEachIO,
+    jotEachIO_,
+    jotPkgInputFile,
+    jotPkgGoldenFile,
+    jotRootInputFile,
+    jotTempFile,
 
-  , Property
+    Property,
+
+    Workspace(..),
+    ProjectRoot(..),
+    PackagePath(..),
+    workspace,
+    moduleWorkspace,
+    findCabalProjectDir,
 
   ) where
 
@@ -54,3 +68,4 @@ import           HaskellWorks.Polysemy.Hedgehog.Effect.Log
 import           HaskellWorks.Polysemy.Hedgehog.Eval
 import           HaskellWorks.Polysemy.Hedgehog.Jot
 import           HaskellWorks.Polysemy.Hedgehog.Property
+import           HaskellWorks.Polysemy.Hedgehog.Workspace

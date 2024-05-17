@@ -50,11 +50,17 @@ common hw-polysemy                { build-depends: hw-polysemy                  
 common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
 common hw-polysemy-hedgehog       { build-depends: hw-polysemy:hedgehog                                 }
 
+flag werror
+  description: Enable -Werror
+  manual: True
+  default: False
+
 common project-config
   import:               polysemy,
                         polysemy-plugin,
   default-extensions:   BlockArguments
                         DataKinds
+                        DuplicateRecordFields
                         FlexibleContexts
                         FlexibleInstances
                         LambdaCase
@@ -63,6 +69,8 @@ common project-config
                         TypeApplications
   ghc-options:          -Wall
                         -fplugin=Polysemy.Plugin
+  if flag(werror)
+    ghc-options:        -Werror
 
 library core
   import:               base, project-config,
@@ -93,7 +101,9 @@ library core
   if os(windows)
     exposed-modules:    HaskellWorks.IO.Win32.NamedPipe
 
-  exposed-modules:      HaskellWorks.IO.Network
+  exposed-modules:      HaskellWorks.Error
+                        HaskellWorks.Error.Types
+                        HaskellWorks.IO.Network
                         HaskellWorks.IO.Network.NamedPipe
                         HaskellWorks.IO.Network.Port
                         HaskellWorks.IO.Network.Socket
@@ -125,6 +135,7 @@ library core
                         HaskellWorks.Polysemy.System.IO
                         HaskellWorks.Polysemy.System.IO.Temp
                         HaskellWorks.Polysemy.System.Process
+                        HaskellWorks.Prelude
   hs-source-dirs:       core
   default-language:     GHC2021
 
@@ -159,6 +170,7 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
                         HaskellWorks.Polysemy.Hedgehog.Workspace
+                        HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   hs-source-dirs:       hedgehog
   default-language:     GHC2021
 

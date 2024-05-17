@@ -126,7 +126,6 @@ diffVsGoldenFile :: ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
-  => Member (Error IOException) r
   => Member Resource r
   => Member Log r
   => String   -- ^ Actual content
@@ -134,15 +133,18 @@ diffVsGoldenFile :: ()
   -> Sem r ()
 diffVsGoldenFile actualContent goldenFile = withFrozenCallStack $ do
   forM_ mGoldenFileLogFile $ \logFile ->
-    PIO.bracketQSem sem $ PIO.appendFile logFile $ goldenFile <> "\n"
+    PIO.bracketQSem sem $
+      PIO.appendFile logFile (goldenFile <> "\n")
+        & trapFail @IOException
 
   fileExists <- PIO.doesFileExist goldenFile
+    & trapFail @IOException
 
   if
-    | recreateGoldenFiles -> writeGoldenFile goldenFile actualContent
-    | fileExists          -> checkAgainstGoldenFile goldenFile actualLines
-    | createGoldenFiles   -> writeGoldenFile goldenFile actualContent
-    | otherwise           -> reportGoldenFileMissing goldenFile
+    | recreateGoldenFiles -> writeGoldenFile goldenFile actualContent       & trapFail @IOException
+    | fileExists          -> checkAgainstGoldenFile goldenFile actualLines  & trapFail @IOException
+    | createGoldenFiles   -> writeGoldenFile goldenFile actualContent       & trapFail @IOException
+    | otherwise           -> reportGoldenFileMissing goldenFile             & trapFail @IOException
 
   where
     actualLines = List.lines actualContent
@@ -160,9 +162,8 @@ diffVsGoldenFile actualContent goldenFile = withFrozenCallStack $ do
 -- files are never overwritten.
 diffFileVsGoldenFile :: ()
   => HasCallStack
-  => Member Hedgehog r
   => Member (Embed IO) r
-  => Member (Error IOException) r
+  => Member Hedgehog r
   => Member Log r
   => Member Resource r
   => FilePath -- ^ Actual file
@@ -170,4 +171,7 @@ diffFileVsGoldenFile :: ()
   -> Sem r ()
 diffFileVsGoldenFile actualFile referenceFile = withFrozenCallStack $ do
   contents <- PIO.readFile actualFile
+    & trapFail @IOException
+
   diffVsGoldenFile contents referenceFile
+    & trapFail @IOException

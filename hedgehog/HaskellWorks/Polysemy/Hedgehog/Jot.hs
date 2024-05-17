@@ -1,28 +1,32 @@
 module HaskellWorks.Polysemy.Hedgehog.Jot
-  ( jotShow
-  , jotShow_
-  , jotWithCallstack
+  ( jotShow,
+    jotShow_,
+    jotWithCallstack,
 
-  , jot
-  , jot_
-  , jotText_
-  , jotM
-  , jotM_
-  , jotBsUtf8M
-  , jotLbsUtf8M
-  , jotIO
-  , jotIO_
-  , jotShowM
-  , jotShowM_
-  , jotShowIO
-  , jotShowIO_
-  , jotEach
-  , jotEach_
-  , jotEachM
-  , jotEachM_
-  , jotEachIO
-  , jotEachIO_
+    jot,
+    jot_,
+    jotText_,
+    jotM,
+    jotM_,
+    jotBsUtf8M,
+    jotLbsUtf8M,
+    jotIO,
+    jotIO_,
+    jotShowM,
+    jotShowM_,
+    jotShowIO,
+    jotShowIO_,
+    jotEach,
+    jotEach_,
+    jotEachM,
+    jotEachM_,
+    jotEachIO,
+    jotEachIO_,
 
+    jotPkgGoldenFile,
+    jotPkgInputFile,
+    jotRootInputFile,
+    jotTempFile,
   ) where
 
 
@@ -37,9 +41,10 @@ import           HaskellWorks.Polysemy.Prelude
 import qualified Hedgehog.Internal.Property                     as H
 import qualified Hedgehog.Internal.Source                       as H
 
+import           HaskellWorks.Polysemy
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
+import           HaskellWorks.Polysemy.Hedgehog.Workspace.Types
 import           HaskellWorks.Polysemy.String
-import           Polysemy
 
 -- | Annotate the given string at the context supplied by the callstack.
 jotWithCallstack :: ()
@@ -65,9 +70,10 @@ jot a = GHC.withFrozenCallStack $ do
 jot_ :: ()
   => Member Hedgehog r
   => GHC.HasCallStack
-  => String
+  => ToString s
+  => s
   -> Sem r ()
-jot_ a = GHC.withFrozenCallStack $ jotWithCallstack GHC.callStack a
+jot_ a = GHC.withFrozenCallStack $ jotWithCallstack GHC.callStack $ toString a
 
 -- | Annotate the given text returning unit.
 jotText_ :: ()
@@ -282,3 +288,50 @@ jotEachIO_ :: ()
 jotEachIO_ f = GHC.withFrozenCallStack $ do
   !as <- evalIO f
   for_ as $ jotWithCallstack GHC.callStack . show
+
+-- | Return the input file path after annotating it relative to the package directory
+jotPkgInputFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Reader PackagePath) r
+  => FilePath
+  -> Sem r FilePath
+jotPkgInputFile filePath = withFrozenCallStack $ do
+  PackagePath { filePath = pkgPath } <- ask
+  jot_ $ pkgPath <> "/" <> filePath
+  return filePath
+
+-- | Return the golden file path after annotating it relative to the package directory
+jotPkgGoldenFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Reader PackagePath) r
+  => FilePath
+  -> Sem r FilePath
+jotPkgGoldenFile filePath = withFrozenCallStack $ do
+  PackagePath { filePath = pkgPath } <- ask
+  jot_ $ pkgPath <> "/" <> filePath
+  return filePath
+
+jotRootInputFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Reader ProjectRoot) r
+  => FilePath
+  -> Sem r FilePath
+jotRootInputFile filePath = withFrozenCallStack $ do
+  ProjectRoot { filePath = pkgPath } <- ask
+  jot $ pkgPath <> "/" <> filePath
+
+-- | Return the test file path after annotating it relative to the project root directory
+jotTempFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Reader Workspace) r
+  => FilePath
+  -> Sem r FilePath
+jotTempFile filePath = withFrozenCallStack $ do
+  Workspace { filePath = workspace } <- ask
+  let relPath = workspace <> "/" <> filePath
+  jot_ $ workspace <> "/" <> relPath
+  return relPath
