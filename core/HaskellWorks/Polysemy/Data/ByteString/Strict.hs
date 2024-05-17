@@ -150,7 +150,6 @@ module HaskellWorks.Polysemy.Data.ByteString.Strict
     -- * I\/O with 'ByteString's
 
     -- ** Standard input and output
-    getLine,
     getContents,
     putStr,
     interact,
@@ -161,7 +160,6 @@ module HaskellWorks.Polysemy.Data.ByteString.Strict
     appendFile,
 
     -- ** I\/O with Handles
-    hGetLine,
     hGetContents,
     hGet,
     hGetSome,
@@ -241,17 +239,6 @@ getContents = withFrozenCallStack $ do
   r <- embed $ CE.try @IOException BS.getContents
   fromEither r
 
-getLine :: ()
-  => HasCallStack
-  => Member (Error IOException) r
-  => Member (Embed IO) r
-  => Member Log r
-  => Sem r ByteString
-getLine = withFrozenCallStack $ do
-  debug "Call to: getLine"
-  r <- embed $ CE.try @IOException BS.getLine
-  fromEither r
-
 putStr :: ()
   => HasCallStack
   => Member (Error IOException) r
@@ -312,18 +299,6 @@ appendFile :: ()
 appendFile filePath bs = withFrozenCallStack $ do
   info $ "Appending bytestring to file: " <> Text.pack filePath
   r <- embed $ CE.try @IOException $ BS.appendFile filePath bs
-  fromEither r
-
-hGetLine :: ()
-  => HasCallStack
-  => Member (Error IOException) r
-  => Member (Embed IO) r
-  => Member Log r
-  => Handle
-  -> Sem r ByteString
-hGetLine h = withFrozenCallStack $ do
-  debug "Call to: hGetLine"
-  r <- embed $ CE.try @IOException $ BS.hGetLine h
   fromEither r
 
 hGetContents :: ()

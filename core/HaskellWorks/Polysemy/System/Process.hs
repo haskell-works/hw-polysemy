@@ -32,12 +32,18 @@ module HaskellWorks.Polysemy.System.Process
     system,
     rawSystem,
 
+    waitSecondsForProcess,
+
   ) where
 
 import qualified Control.Exception             as CE
+import           HaskellWorks.Error
+import           HaskellWorks.Error.Types
+import qualified HaskellWorks.IO.Process       as IO
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 import           Polysemy.Error
+import           Polysemy.Log
 import           System.Exit                   (ExitCode (..))
 import           System.IO                     (Handle)
 import           System.Posix.Internals        (FD)
@@ -257,3 +263,16 @@ rawSystem :: ()
 rawSystem cmd args = do
   r <- embed $ CE.try @IOException $ IO.rawSystem cmd args
   fromEither r
+
+waitSecondsForProcess :: ()
+  => Member (Embed IO) r
+  => Member (Error GenericError) r
+  => Member (Error IOException) r
+  => Member (Error TimedOut) r
+  => Member Log r
+  => Int
+  -> ProcessHandle
+  -> Sem r (Maybe ExitCode)
+waitSecondsForProcess seconds hProcess =
+  embed (IO.waitSecondsForProcess seconds hProcess)
+    & onLeftM @TimedOut throw

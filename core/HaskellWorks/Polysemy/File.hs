@@ -1,5 +1,4 @@
-{-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module HaskellWorks.Polysemy.File
   ( JsonDecodeError(..)
