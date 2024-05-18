@@ -2,11 +2,14 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
   ( Hedgehog,
     leftFail,
     leftFailM,
+    leftFailWith,
+    leftFailWithM,
     nothingFail,
     nothingFailM,
     requireHead,
     catchFail,
     trapFail,
+    trapFailWith,
     evalIO,
     failure,
     failMessage,
@@ -63,11 +66,23 @@ leftFail :: ()
   -> Sem r a
 leftFail r = withFrozenCallStack $ case r of
   Right a -> pure a
-  Left e  -> failMessage GHC.callStack ("Expected Right: " <> show e)
+  Left e  -> failMessage GHC.callStack (show e)
+
+-- | Fail when the result is Left.
+leftFailWith :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Show e
+  => (e -> String)
+  -> Either e a
+  -> Sem r a
+leftFailWith toS r = withFrozenCallStack $ case r of
+  Right a -> pure a
+  Left e  -> failMessage GHC.callStack (toS e)
 
 nothingFail :: ()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => Maybe a
   -> Sem r a
 nothingFail r = withFrozenCallStack $ case r of
@@ -75,15 +90,15 @@ nothingFail r = withFrozenCallStack $ case r of
   Nothing -> failMessage GHC.callStack "Expected Just"
 
 failure :: ()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => Sem r a
 failure =
   withFrozenCallStack $ failWith Nothing ""
 
 failMessage :: ()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => GHC.CallStack
   -> String
   -> Sem r a
@@ -91,17 +106,27 @@ failMessage cs =
   withFrozenCallStack $ failWithCustom cs Nothing
 
 leftFailM :: forall e r a. ()
+  => HasCallStack
   => Member Hedgehog r
   => Show e
-  => HasCallStack
   => Sem r (Either e a)
   -> Sem r a
 leftFailM f =
   withFrozenCallStack $ f >>= leftFail
 
-nothingFailM :: forall r a. ()
-  => Member Hedgehog r
+leftFailWithM :: forall e r a. ()
   => HasCallStack
+  => Member Hedgehog r
+  => Show e
+  => (e -> String)
+  -> Sem r (Either e a)
+  -> Sem r a
+leftFailWithM toS f =
+  withFrozenCallStack $ f >>= leftFailWith toS
+
+nothingFailM :: forall r a. ()
+  => HasCallStack
+  => Member Hedgehog r
   => Sem r (Maybe a)
   -> Sem r a
 nothingFailM f =
@@ -125,6 +150,16 @@ trapFail :: forall e r a.()
   -> Sem r a
 trapFail f =
   withFrozenCallStack $ f & runError & leftFailM
+
+trapFailWith :: forall e r a.()
+  => Member Hedgehog r
+  => HasCallStack
+  => Show e
+  => (e -> String)
+  -> Sem (Error e ': r) a
+  -> Sem r a
+trapFailWith toS f =
+  withFrozenCallStack $ f & runError & leftFailWithM toS
 
 requireHead :: ()
   => Member Hedgehog r

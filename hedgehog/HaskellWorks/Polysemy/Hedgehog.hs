@@ -9,11 +9,14 @@ module HaskellWorks.Polysemy.Hedgehog
 
     leftFail,
     leftFailM,
+    leftFailWith,
+    leftFailWithM,
     catchFail,
     nothingFail,
     nothingFailM,
     requireHead,
     trapFail,
+    trapFailWith,
 
     failure,
     failMessage,
