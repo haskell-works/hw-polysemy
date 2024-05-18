@@ -46,6 +46,10 @@ common time                       { build-depends: time                         
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
 common yaml                       { build-depends: yaml                                        < 0.12   }
 
+common Win32
+  if os(windows)
+    build-depends:      Win32   >= 2.5.4.1
+
 common hw-polysemy                { build-depends: hw-polysemy                                          }
 common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
 common hw-polysemy-hedgehog       { build-depends: hw-polysemy:hedgehog                                 }
@@ -95,6 +99,7 @@ library core
                         temporary,
                         time,
                         unliftio,
+                        Win32,
                         yaml,
   visibility:           public
 

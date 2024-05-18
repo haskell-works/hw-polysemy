@@ -1,0 +1,7 @@
+packages: .
+
+source-repository-package
+    type: git
+    location: https://github.com/newhoggy/polysemy-conc
+    tag: 7d45ccd462c973f15156070ba24084ff15758f15
+    subdir: packages/conc
