@@ -19,6 +19,7 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
     assert,
     assertM,
     assertIO,
+    assertWithinTolerance,
     assertPidOk,
     assertIsJsonFile_,
     assertIsYamlFile,
@@ -31,6 +32,9 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
     assertEndsWithSingleNewline,
     assertDirectoryExists,
     assertDirectoryMissing,
+
+    diff,
+    failDiff,
   ) where
 
 
@@ -46,6 +50,8 @@ import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory
 import           HaskellWorks.Polysemy.System.IO                as IO
 import           HaskellWorks.Polysemy.System.Process
+import qualified Hedgehog.Internal.Property                     as H
+import qualified Hedgehog.Internal.Show                         as H
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Log
@@ -187,7 +193,7 @@ assertM :: ()
   => Member Hedgehog r
   => Sem r Bool
   -> Sem r ()
-assertM f = withFrozenCallStack $ do
+assertM f = withFrozenCallStack $
   f >>= assert
 
 assertIO :: ()
@@ -196,8 +202,69 @@ assertIO :: ()
   => Member (Embed IO) r
   => IO Bool
   -> Sem r ()
-assertIO f = withFrozenCallStack $ do
+assertIO f = withFrozenCallStack $
   embed f >>= assert
+
+assertWithinTolerance :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Show a
+  => Ord a
+  => Num a
+  => a -- ^ tested value @v@
+  -> a -- ^ expected value @c@
+  -> a -- ^ tolerance range @r@
+  -> Sem r ()
+assertWithinTolerance v c r = withFrozenCallStack $ do
+  diff v (>=) (c - r)
+  diff v (<=) (c + r)
+
+diff :: ()
+  => Member Hedgehog r
+  => Show a
+  => Show b
+  => HasCallStack
+  => a
+  -> (a -> b -> Bool)
+  -> b
+  -> Sem r ()
+diff x op y =
+  withFrozenCallStack $ do
+    eval (x `op` y)
+      & onFalseM_ (failDiff x y)
+      & void
+
+-- | Fails with an error that shows the difference between two values.
+failDiff :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Show a
+  => Show b
+  => a
+  -> b
+  -> Sem r ()
+failDiff x y =
+  case H.valueDiff <$> H.mkValue x <*> H.mkValue y of
+    Nothing ->
+      withFrozenCallStack $
+        failWith Nothing $
+          L.unlines
+            [ "Failed"
+            , "━━ lhs ━━"
+            , H.showPretty x
+            , "━━ rhs ━━"
+            , H.showPretty y
+            ]
+
+    Just vdiff@(H.ValueSame _) ->
+      withFrozenCallStack $
+        failWith (Just $
+          H.Diff "━━━ Failed ("  "" "no differences" "" ") ━━━" vdiff) ""
+
+    Just vdiff ->
+      withFrozenCallStack $
+        failWith (Just $
+          H.Diff "━━━ Failed (" "- lhs" ") (" "+ rhs" ") ━━━" vdiff) ""
 
 assertPidOk :: ()
   => HasCallStack

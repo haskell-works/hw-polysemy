@@ -20,9 +20,12 @@ module HaskellWorks.Polysemy.Hedgehog
     assert,
     assertM,
     assertIO,
+    assertWithinTolerance,
 
     failure,
     failMessage,
+    diff,
+    failDiff,
     (===),
 
     eval,
