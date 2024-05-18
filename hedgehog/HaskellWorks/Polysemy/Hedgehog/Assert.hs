@@ -16,6 +16,9 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
 
     (===),
 
+    assert,
+    assertM,
+    assertIO,
     assertPidOk,
     assertIsJsonFile_,
     assertIsYamlFile,
@@ -48,10 +51,10 @@ import           Polysemy.Error
 import           Polysemy.Log
 
 (===) :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Eq a
   => Show a
-  => HasCallStack
   => a
   -> a
   -> Sem r ()
@@ -59,9 +62,9 @@ import           Polysemy.Log
 
 -- | Fail when the result is Left.
 leftFail :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Show e
-  => HasCallStack
   => Either e a
   -> Sem r a
 leftFail r = withFrozenCallStack $ case r of
@@ -133,8 +136,8 @@ nothingFailM f =
   withFrozenCallStack $ f >>= nothingFail
 
 catchFail :: forall e r a.()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => Show e
   => Sem (Error e ': r) a
   -> Sem r a
@@ -143,8 +146,8 @@ catchFail f =
 {-# DEPRECATED catchFail "Use trapFail instead" #-}
 
 trapFail :: forall e r a.()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => Show e
   => Sem (Error e ': r) a
   -> Sem r a
@@ -152,8 +155,8 @@ trapFail f =
   withFrozenCallStack $ f & runError & leftFailM
 
 trapFailWith :: forall e r a.()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => Show e
   => (e -> String)
   -> Sem (Error e ': r) a
@@ -162,14 +165,39 @@ trapFailWith toS f =
   withFrozenCallStack $ f & runError & leftFailWithM toS
 
 requireHead :: ()
-  => Member Hedgehog r
   => HasCallStack
+  => Member Hedgehog r
   => [a]
   -> Sem r a
 requireHead = withFrozenCallStack $
   \case
     []    -> failMessage GHC.callStack "Cannot take head of empty list"
     (x:_) -> pure x
+
+assert :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Bool
+  -> Sem r ()
+assert b = withFrozenCallStack $
+  unless b $ failMessage GHC.callStack "Assertion failed"
+
+assertM :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Sem r Bool
+  -> Sem r ()
+assertM f = withFrozenCallStack $ do
+  f >>= assert
+
+assertIO :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Embed IO) r
+  => IO Bool
+  -> Sem r ()
+assertIO f = withFrozenCallStack $ do
+  embed f >>= assert
 
 assertPidOk :: ()
   => HasCallStack

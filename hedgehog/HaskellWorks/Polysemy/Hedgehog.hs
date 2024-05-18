@@ -17,6 +17,9 @@ module HaskellWorks.Polysemy.Hedgehog
     requireHead,
     trapFail,
     trapFailWith,
+    assert,
+    assertM,
+    assertIO,
 
     failure,
     failMessage,
