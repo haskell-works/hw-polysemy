@@ -1,17 +1,19 @@
 module HaskellWorks.Polysemy.Hedgehog.Process
-  ( defaultExecConfig
-  , execFlex
-  , execFlexOk
-  , execFlexOk'
-  , execOk
-  , execOk_
-  , exec
-  , procFlex
-  , procFlex'
-  , binFlex
+  ( ExecConfig(..),
+    defaultExecConfig,
+    execDetailFlex,
+    execFlex,
+    execFlexOk,
+    execFlexOk',
+    execOk,
+    execOk_,
+    exec,
+    procFlex,
+    procFlex',
+    binFlex,
 
-  , waitSecondsForProcess
-  , waitSecondsForProcessOk
+    waitSecondsForProcess,
+    waitSecondsForProcessOk,
 
   ) where
 
@@ -109,6 +111,25 @@ execFlex execConfig pkgBin envBin arguments = withFrozenCallStack $ do
     ShellCommand cmd    -> cmd
     RawCommand cmd args -> cmd <> " " <> L.unwords (argQuote <$> args)
 
+  readCreateProcessWithExitCode cp ""
+
+execDetailFlex :: ()
+  => HasCallStack
+  => Member (Embed IO) r
+  => Member (Error GenericError) r
+  => Member (Error IOException) r
+  => Member Hedgehog r
+  => Member Log r
+  => ExecConfig
+  -> String
+  -> String
+  -> [String]
+  -> Sem r (ExitCode, String, String)
+execDetailFlex execConfig pkgBin envBin arguments = withFrozenCallStack $ do
+  cp <- procFlex' execConfig pkgBin envBin arguments
+  jot_ . ("Command: " <>) $ case cmdspec cp of
+    ShellCommand cmd    -> cmd
+    RawCommand cmd args -> cmd <> " " <> L.unwords args
   readCreateProcessWithExitCode cp ""
 
 -- | Execute a process, returning '()'.
