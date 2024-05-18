@@ -12,7 +12,7 @@ import           Prelude (error)
 import           System.IO (FilePath, IO)
 
 #ifdef mingw32_HOST_OS
-import qualified Hedgehog.Extras.Internal.Win32.NamedPipes as W32
+import qualified HaskellWorks.IO.Win32.NamedPipe as W32
 #endif
 
 doesNamedPipeExist :: FilePath -> IO Bool
