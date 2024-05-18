@@ -8,10 +8,9 @@ module HaskellWorks.Polysemy.HedgehogSpec
 
 import           HaskellWorks.Polysemy.Prelude
 
-import qualified Data.List                             as L
-import qualified HaskellWorks.Polysemy.Data.Text       as T
+import qualified Data.List                       as L
+import qualified HaskellWorks.Polysemy.Data.Text as T
 import           HaskellWorks.Polysemy.Hedgehog
-import           HaskellWorks.Polysemy.Hedgehog.Assert
 
 default (String)
 
