@@ -16,6 +16,7 @@ import           HaskellWorks.Polysemy.Hedgehog.Effect.Log
 import           Polysemy
 import           Polysemy.Embed
 import           Polysemy.Log
+import           Polysemy.Resource
 import           Polysemy.Time.Interpreter.Ghc
 
 propertyOnce :: ()
@@ -27,6 +28,7 @@ propertyOnce :: ()
         , Hedgehog
         , Embed IO
         , Embed (H.PropertyT IO)
+        , Resource
         , Final (H.PropertyT IO)
         ] ()
   -> H.Property
@@ -39,6 +41,7 @@ propertyOnce f = f
   & hedgehogToIntegrationFinal
   & runEmbedded liftIO
   & embedToFinal @(H.PropertyT IO)
+  & runResource
   & runFinal
   & H.property
   & H.withTests 1

@@ -11,6 +11,8 @@ import           HaskellWorks.Polysemy.Prelude
 import qualified Data.List                       as L
 import qualified HaskellWorks.Polysemy.Data.Text as T
 import           HaskellWorks.Polysemy.Hedgehog
+import           HaskellWorks.Polysemy.System.IO
+import           System.IO                       (IOMode (..))
 
 default (String)
 
