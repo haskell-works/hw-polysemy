@@ -1,12 +1,12 @@
 module HaskellWorks.Polysemy.System.IO
-  ( IO.BufferMode,
+  ( IO.BufferMode(..),
     IO.FilePath,
     IO.Handle,
     IO.HandlePosn,
     IO.IO,
-    IO.IOMode,
-    IO.NewlineMode,
-    IO.SeekMode,
+    IO.IOMode(..),
+    IO.NewlineMode(..),
+    IO.SeekMode(..),
     IO.TextEncoding,
 
     String,
