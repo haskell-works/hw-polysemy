@@ -4,7 +4,7 @@ module HaskellWorks.Polysemy.Hedgehog
 
     Hedgehog,
 
-    hedgehogToIntegrationFinal,
+    hedgehogToPropertyFinal,
     interpretDataLogHedgehog,
 
     leftFail,

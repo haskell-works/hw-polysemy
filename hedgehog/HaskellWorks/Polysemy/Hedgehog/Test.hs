@@ -1,6 +1,6 @@
-module HaskellWorks.Polysemy.Hedgehog.Property
+module HaskellWorks.Polysemy.Hedgehog.Test
   ( Property
-  , propertyOnce
+  , test
 
   ) where
 
@@ -19,7 +19,7 @@ import           Polysemy.Log
 import           Polysemy.Resource
 import           Polysemy.Time.Interpreter.Ghc
 
-propertyOnce :: ()
+test :: ()
   => Sem
         [ Log
         , DataLog (LogEntry LogMessage)
@@ -27,21 +27,22 @@ propertyOnce :: ()
         , GhcTime
         , Hedgehog
         , Embed IO
-        , Embed (H.PropertyT IO)
+        , Embed (H.TestT IO)
         , Resource
-        , Final (H.PropertyT IO)
+        , Final (H.TestT IO)
         ] ()
   -> H.Property
-propertyOnce f = f
+test f = f
   & interpretLogDataLog
   & setLogLevel (Just Info)
   & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
   & interpretDataLogHedgehog id (const GHC.callStack)
   & interpretTimeGhc
-  & hedgehogToPropertyFinal
+  & hedgehogToTestFinal
   & runEmbedded liftIO
-  & embedToFinal @(H.PropertyT IO)
+  & embedToFinal @(H.TestT IO)
   & runResource
   & runFinal
+  & H.test
   & H.property
   & H.withTests 1

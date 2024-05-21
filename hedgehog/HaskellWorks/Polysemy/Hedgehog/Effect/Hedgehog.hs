@@ -12,7 +12,9 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   , failWith
   , failWithCustom
 
-  , hedgehogToIntegrationFinal
+  , hedgehogToMonadTestFinal
+  , hedgehogToPropertyFinal
+  , hedgehogToTestFinal
 
   ) where
 
@@ -22,6 +24,8 @@ import           HaskellWorks.Polysemy.Prelude
 import qualified Hedgehog                                                as H
 import qualified Hedgehog.Internal.Property                              as H
 
+import qualified Control.Monad.Catch                                     as IO
+import qualified Control.Monad.IO.Class                                  as IO
 import qualified HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal as I
 import           Polysemy
 import           Polysemy.Final
@@ -61,11 +65,14 @@ data Hedgehog m rv where
 
 makeSem ''Hedgehog
 
-hedgehogToIntegrationFinal :: ()
-  => Member (Final (H.PropertyT IO)) r
+hedgehogToMonadTestFinal :: ()
+  => IO.MonadIO m
+  => IO.MonadCatch m
+  => H.MonadTest m
+  => Member (Final m) r
   => Sem (Hedgehog ': r) a
   -> Sem r a
-hedgehogToIntegrationFinal = interpretFinal \case
+hedgehogToMonadTestFinal = interpretFinal \case
   AssertEquals a b ->
     liftS $ a H.=== b
   Eval a ->
@@ -81,3 +88,15 @@ hedgehogToIntegrationFinal = interpretFinal \case
     liftS $ I.failWithCustom cs mdiff msg
   WriteLog logValue ->
     liftS $ H.writeLog logValue
+
+hedgehogToPropertyFinal :: ()
+  => Member (Final (H.PropertyT IO)) r
+  => Sem (Hedgehog ': r) a
+  -> Sem r a
+hedgehogToPropertyFinal = hedgehogToMonadTestFinal
+
+hedgehogToTestFinal :: ()
+  => Member (Final (H.TestT IO)) r
+  => Sem (Hedgehog ': r) a
+  -> Sem r a
+hedgehogToTestFinal = hedgehogToMonadTestFinal
