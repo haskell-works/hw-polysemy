@@ -25,6 +25,7 @@ common bytestring                 { build-depends: bytestring                   
 common contravariant              { build-depends: contravariant                               < 1.6    }
 common Diff                       { build-depends: Diff                                        < 0.6    }
 common directory                  { build-depends: directory                                   < 1.4    }
+common exceptions                 { build-depends: exceptions                                  < 0.11   }
 common filepath                   { build-depends: filepath                                    < 1.6    }
 common generic-lens               { build-depends: generic-lens                                < 2.3    }
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.12   }
@@ -151,6 +152,7 @@ library hedgehog
                         bytestring,
                         contravariant,
                         Diff,
+                        exceptions,
                         filepath,
                         generic-lens,
                         ghc-prim,
@@ -174,6 +176,7 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Process
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
+                        HaskellWorks.Polysemy.Hedgehog.Test
                         HaskellWorks.Polysemy.Hedgehog.Workspace
                         HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   hs-source-dirs:       hedgehog
@@ -215,6 +218,7 @@ library
                         HaskellWorks.Polysemy.Hedgehog.Process,
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal,
                         HaskellWorks.Polysemy.Hedgehog.Property,
+                        HaskellWorks.Polysemy.Hedgehog.Test,
                         HaskellWorks.Polysemy.Hedgehog.Workspace,
                         HaskellWorks.Polysemy.Prelude,
                         HaskellWorks.Polysemy.String,
