@@ -17,7 +17,7 @@ source-repository head
   type:                 git
   location:             https://github.com/haskell-works/hw-polysemy
 
-common base                       { build-depends: base                       >= 4.18       && < 5      }
+common base                       { build-depends: base                       >= 4.13       && < 5      }
 
 common aeson                      { build-depends: aeson                                       < 2.3    }
 common async                      { build-depends: async                                       < 2.3    }
@@ -65,13 +65,17 @@ common project-config
                         polysemy-plugin,
   default-extensions:   BlockArguments
                         DataKinds
+                        DeriveGeneric
                         DuplicateRecordFields
                         FlexibleContexts
                         FlexibleInstances
                         LambdaCase
                         NoImplicitPrelude
                         OverloadedStrings
+                        RankNTypes
+                        ScopedTypeVariables
                         TypeApplications
+                        TypeOperators
   ghc-options:          -Wall
                         -fplugin=Polysemy.Plugin
   if flag(werror)
@@ -143,7 +147,7 @@ library core
                         HaskellWorks.Polysemy.System.Process
                         HaskellWorks.Prelude
   hs-source-dirs:       core
-  default-language:     GHC2021
+  default-language:     Haskell2010
 
 library hedgehog
   import:               base, project-config,
@@ -180,7 +184,7 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Workspace
                         HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   hs-source-dirs:       hedgehog
-  default-language:     GHC2021
+  default-language:     Haskell2010
 
 library
   import:               base, project-config,
@@ -226,7 +230,7 @@ library
                         HaskellWorks.Polysemy.System.Environment,
                         HaskellWorks.Polysemy.System.IO,
                         HaskellWorks.Polysemy.System.Process,
-  default-language:     GHC2021
+  default-language:     Haskell2010
 
 test-suite hw-polysemy-test
   import:               base, project-config,
@@ -237,7 +241,7 @@ test-suite hw-polysemy-test
                         tasty-hedgehog,
                         tasty,
                         text,
-  default-language:     GHC2021
+  default-language:     Haskell2010
   type:                 exitcode-stdio-1.0
   build-tool-depends:   tasty-discover:tasty-discover
   hs-source-dirs:       test

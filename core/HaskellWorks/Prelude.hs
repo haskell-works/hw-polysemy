@@ -64,6 +64,7 @@ module HaskellWorks.Prelude
   , ($)
   , (&)
   , not
+  , otherwise
   , (&&)
   , (||)
   , (.)

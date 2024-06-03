@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 module HaskellWorks.Polysemy.Hedgehog.Jot
   ( jotShow,
     jotShow_,
@@ -296,10 +298,10 @@ jotPkgInputFile :: ()
   => Member (Reader PackagePath) r
   => FilePath
   -> Sem r FilePath
-jotPkgInputFile filePath = withFrozenCallStack $ do
+jotPkgInputFile fp = withFrozenCallStack $ do
   PackagePath { filePath = pkgPath } <- ask
-  jot_ $ pkgPath <> "/" <> filePath
-  return filePath
+  jot_ $ pkgPath <> "/" <> fp
+  return fp
 
 -- | Return the golden file path after annotating it relative to the package directory
 jotPkgGoldenFile :: ()
@@ -308,10 +310,10 @@ jotPkgGoldenFile :: ()
   => Member (Reader PackagePath) r
   => FilePath
   -> Sem r FilePath
-jotPkgGoldenFile filePath = withFrozenCallStack $ do
+jotPkgGoldenFile fp = withFrozenCallStack $ do
   PackagePath { filePath = pkgPath } <- ask
-  jot_ $ pkgPath <> "/" <> filePath
-  return filePath
+  jot_ $ pkgPath <> "/" <> fp
+  return fp
 
 jotRootInputFile :: ()
   => HasCallStack
@@ -319,9 +321,9 @@ jotRootInputFile :: ()
   => Member (Reader ProjectRoot) r
   => FilePath
   -> Sem r FilePath
-jotRootInputFile filePath = withFrozenCallStack $ do
+jotRootInputFile fp = withFrozenCallStack $ do
   ProjectRoot { filePath = pkgPath } <- ask
-  jot $ pkgPath <> "/" <> filePath
+  jot $ pkgPath <> "/" <> fp
 
 -- | Return the test file path after annotating it relative to the project root directory
 jotTempFile :: ()
@@ -330,8 +332,8 @@ jotTempFile :: ()
   => Member (Reader Workspace) r
   => FilePath
   -> Sem r FilePath
-jotTempFile filePath = withFrozenCallStack $ do
+jotTempFile fp = withFrozenCallStack $ do
   Workspace { filePath = workspace } <- ask
-  let relPath = workspace <> "/" <> filePath
+  let relPath = workspace <> "/" <> fp
   jot_ $ workspace <> "/" <> relPath
   return relPath
