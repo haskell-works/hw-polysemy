@@ -78,7 +78,7 @@ binDist pkg = do
         Just bin -> return $ addExeSuffix (T.unpack bin)
         Nothing  -> throw $ GenericError $ "Missing bin-file in " <> tshow component
       [] -> throw $ GenericError $ "Cannot find exe " <> tshow pkg <> " in plan"
-    Left message -> throw $ GenericError $ "Cannot decode plan: " <> T.pack message
+    Left msg -> throw $ GenericError $ "Cannot decode plan: " <> T.pack msg
   where matching :: Component -> Bool
         matching component = case componentName component of
           Just name -> name == "exe:" <> T.pack pkg
