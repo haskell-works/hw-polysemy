@@ -18,6 +18,18 @@ module HaskellWorks.Polysemy.Hedgehog.Jot
     jotShowM_,
     jotShowIO,
     jotShowIO_,
+    jotJson,
+    jotJson_,
+    jotJsonM,
+    jotJsonM_,
+    jotJsonPretty,
+    jotJsonPretty_,
+    jotJsonPrettyM,
+    jotJsonPrettyM_,
+    jotYaml,
+    jotYaml_,
+    jotYamlM,
+    jotYamlM_,
     jotEach,
     jotEach_,
     jotEachM,
@@ -31,12 +43,18 @@ module HaskellWorks.Polysemy.Hedgehog.Jot
     jotTempFile,
   ) where
 
+import           Data.Aeson                                     (ToJSON)
 
+import qualified Data.Aeson                                     as J
+import qualified Data.Aeson.Encode.Pretty                       as J
 import qualified Data.ByteString.Lazy                           as LBS
+import qualified Data.Text                                      as T
 import qualified Data.Text                                      as Text
+import qualified Data.Text.Encoding                             as T
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.Lazy                                 as LT
 import qualified Data.Text.Lazy.Encoding                        as LT
+import qualified Data.Yaml                                      as Y
 import qualified GHC.Stack                                      as GHC
 import           HaskellWorks.Polysemy.Prelude
 
@@ -217,6 +235,150 @@ jotShowIO_ :: ()
 jotShowIO_ f = GHC.withFrozenCallStack $ do
   !a <- evalIO f
   jotWithCallstack GHC.callStack (show a)
+  return ()
+
+-- | Annotate the given value as JSON.
+jotJson :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r a
+jotJson a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encode b
+  return b
+
+-- | Annotate the given value as JSON.
+jotJson_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r ()
+jotJson_ a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encode b
+  return ()
+
+-- | Annotate the given value as JSON in a monadic context.
+jotJsonM :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r a
+jotJsonM a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encode b
+  return b
+
+-- | Annotate the given value as JSON in a monadic context.
+jotJsonM_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r ()
+jotJsonM_ a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encode b
+  return ()
+
+-- | Annotate the given value as JSON.
+jotJsonPretty :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r a
+jotJsonPretty a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encodePretty b
+  return b
+
+-- | Annotate the given value as JSON.
+jotJsonPretty_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r ()
+jotJsonPretty_ a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encodePretty b
+  return ()
+
+-- | Annotate the given value as JSON in a monadic context.
+jotJsonPrettyM :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r a
+jotJsonPrettyM a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encodePretty b
+  return b
+
+-- | Annotate the given value as JSON in a monadic context.
+jotJsonPrettyM_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r ()
+jotJsonPrettyM_ a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ LT.unpack $ LT.decodeUtf8 $ J.encodePretty b
+  return ()
+
+-- | Annotate the given value as JSON.
+jotYaml :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r a
+jotYaml a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ T.unpack $ T.decodeUtf8 $ Y.encode b
+  return b
+
+-- | Annotate the given value as JSON.
+jotYaml_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => a
+  -> Sem r ()
+jotYaml_ a = GHC.withFrozenCallStack $ do
+  !b <- eval a
+  jotWithCallstack GHC.callStack $ T.unpack $ T.decodeUtf8 $ Y.encode b
+  return ()
+
+-- | Annotate the given value as JSON in a monadic context.
+jotYamlM :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r a
+jotYamlM a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ T.unpack $ T.decodeUtf8 $ Y.encode b
+  return b
+
+-- | Annotate the given value as JSON in a monadic context.
+jotYamlM_ :: ()
+  => Member Hedgehog r
+  => GHC.HasCallStack
+  => ToJSON a
+  => Sem r a
+  -> Sem r ()
+jotYamlM_ a = GHC.withFrozenCallStack $ do
+  !b <- evalM a
+  jotWithCallstack GHC.callStack $ T.unpack $ T.decodeUtf8 $ Y.encode b
   return ()
 
 -- | Annotate the each value in the given traversable.
