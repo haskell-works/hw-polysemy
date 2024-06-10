@@ -2,11 +2,16 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
   ( Hedgehog,
     leftFail,
     leftFailM,
+    leftFailJson,
+    leftFailJsonM,
     nothingFail,
     nothingFailM,
     requireHead,
     catchFail,
     trapFail,
+    trapFailJson,
+    trapFailJsonPretty,
+    trapFailYaml,
     evalIO,
     failure,
     failMessage,
@@ -29,9 +34,16 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
 
 
 import           Control.Lens                                   ((^.))
-import           Data.Aeson                                     (Value)
+import           Data.Aeson                                     (ToJSON, Value)
+import qualified Data.Aeson                                     as J
+import qualified Data.Aeson.Encode.Pretty                       as J
 import           Data.Generics.Product.Any
 import qualified Data.List                                      as L
+import qualified Data.Text                                      as T
+import qualified Data.Text.Encoding                             as T
+import qualified Data.Text.Lazy                                 as LT
+import qualified Data.Text.Lazy.Encoding                        as LT
+import qualified Data.Yaml                                      as Y
 import qualified GHC.Stack                                      as GHC
 import           HaskellWorks.Polysemy.Error
 import           HaskellWorks.Polysemy.File
@@ -64,6 +76,19 @@ leftFail :: ()
 leftFail r = withFrozenCallStack $ case r of
   Right a -> pure a
   Left e  -> failMessage GHC.callStack ("Expected Right: " <> show e)
+
+-- | Fail when the result is Left with the error message as JSON.
+leftFailJson :: ()
+  => Member Hedgehog r
+  => ToJSON e
+  => HasCallStack
+  => Either e a
+  -> Sem r a
+leftFailJson r = withFrozenCallStack $ case r of
+  Right a -> pure a
+  Left e  -> do
+    let msg = LT.unpack $ LT.decodeUtf8 $ J.encode e
+    failMessage GHC.callStack ("Expected Right: " <> msg)
 
 nothingFail :: ()
   => Member Hedgehog r
@@ -99,6 +124,15 @@ leftFailM :: forall e r a. ()
 leftFailM f =
   withFrozenCallStack $ f >>= leftFail
 
+leftFailJsonM :: forall e r a. ()
+  => Member Hedgehog r
+  => ToJSON e
+  => HasCallStack
+  => Sem r (Either e a)
+  -> Sem r a
+leftFailJsonM f =
+  withFrozenCallStack $ f >>= leftFailJson
+
 nothingFailM :: forall r a. ()
   => Member Hedgehog r
   => HasCallStack
@@ -123,8 +157,53 @@ trapFail :: forall e r a.()
   => Show e
   => Sem (Error e ': r) a
   -> Sem r a
-trapFail f =
-  withFrozenCallStack $ f & runError & leftFailM
+trapFail f = do
+  r <- withFrozenCallStack $ f & runError
+  case r of
+    Right a -> pure a
+    Left e  -> failMessage GHC.callStack $ show e
+
+trapFailJson :: forall e r a.()
+  => Member Hedgehog r
+  => HasCallStack
+  => ToJSON e
+  => Sem (Error e ': r) a
+  -> Sem r a
+trapFailJson f = do
+  r <- withFrozenCallStack $ f & runError
+  case r of
+    Right a -> pure a
+    Left e  -> do
+      let msg = LT.unpack $ LT.decodeUtf8 $ J.encode e
+      failMessage GHC.callStack msg
+
+trapFailJsonPretty :: forall e r a.()
+  => Member Hedgehog r
+  => HasCallStack
+  => ToJSON e
+  => Sem (Error e ': r) a
+  -> Sem r a
+trapFailJsonPretty f = do
+  r <- withFrozenCallStack $ f & runError
+  case r of
+    Right a -> pure a
+    Left e  -> do
+      let msg = LT.unpack $ LT.decodeUtf8 $ J.encodePretty e
+      failMessage GHC.callStack msg
+
+trapFailYaml :: forall e r a.()
+  => Member Hedgehog r
+  => HasCallStack
+  => ToJSON e
+  => Sem (Error e ': r) a
+  -> Sem r a
+trapFailYaml f = do
+  r <- withFrozenCallStack $ f & runError
+  case r of
+    Right a -> pure a
+    Left e  -> do
+      let msg = T.unpack $ T.decodeUtf8 $ Y.encode e
+      failMessage GHC.callStack msg
 
 requireHead :: ()
   => Member Hedgehog r

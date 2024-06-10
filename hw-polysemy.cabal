@@ -20,6 +20,7 @@ source-repository head
 common base                       { build-depends: base                       >= 4.13       && < 5      }
 
 common aeson                      { build-depends: aeson                                       < 2.3    }
+common aeson-pretty               { build-depends: aeson-pretty                                < 0.9    }
 common async                      { build-depends: async                                       < 2.3    }
 common bytestring                 { build-depends: bytestring                                  < 0.13   }
 common contravariant              { build-depends: contravariant                               < 1.6    }
@@ -152,6 +153,7 @@ library core
 library hedgehog
   import:               base, project-config,
                         aeson,
+                        aeson-pretty,
                         async,
                         bytestring,
                         contravariant,
@@ -168,6 +170,7 @@ library hedgehog
                         polysemy,
                         process,
                         text,
+                        yaml,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Assert
