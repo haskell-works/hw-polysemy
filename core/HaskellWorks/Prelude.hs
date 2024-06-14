@@ -108,6 +108,27 @@ module HaskellWorks.Prelude
 
   , for_
 
+  , Fractional(..)
+  , Real(..)
+  , RealFrac(..)
+  , Ratio(..)
+  , Rational
+  , fromIntegral
+  , realToFrac
+  , even
+  , odd
+  , numericEnumFrom
+  , numericEnumFromThen
+  , numericEnumFromTo
+  , numericEnumFromThenTo
+  , integralEnumFrom
+  , integralEnumFromThen
+  , integralEnumFromTo
+  , integralEnumFromThenTo
+  , numerator
+  , denominator
+  , (%)
+
   , Monad(..)
   , MonadFail(..)
   , MonadPlus(..)
@@ -161,6 +182,7 @@ import           Data.Word
 import           GHC.Base
 import           GHC.Generics
 import           GHC.Num
+import           GHC.Real
 import           GHC.Stack
 import           System.FilePath
 import           Text.Show

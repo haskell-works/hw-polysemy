@@ -5,12 +5,15 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   ( Hedgehog
 
   , assertEquals
+  , catchAssertion
   , eval
   , evalM
   , evalIO
   , writeLog
   , failWith
   , failWithCustom
+  , throwAssertion
+  , trapAssertion
 
   , hedgehogToMonadTestFinal
   , hedgehogToPropertyFinal
@@ -18,7 +21,6 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 
   ) where
 
-import qualified GHC.Stack                                               as GHC
 import           HaskellWorks.Polysemy.Prelude
 
 import qualified Hedgehog                                                as H
@@ -31,50 +33,73 @@ import           Polysemy
 import           Polysemy.Final
 
 data Hedgehog m rv where
-  AssertEquals :: (GHC.HasCallStack, Eq a, Show a)
+  AssertEquals :: (HasCallStack, Eq a, Show a)
     => a
     -> a
     -> Hedgehog m ()
 
-  Eval :: GHC.HasCallStack
+  CatchAssertion :: HasCallStack
+    => m a
+    -> (H.Failure -> m a)
+    -> Hedgehog m a
+
+  Eval :: HasCallStack
     => a
     -> Hedgehog m a
 
-  EvalM :: GHC.HasCallStack
+  EvalM :: HasCallStack
     => m a
     -> Hedgehog m a
 
-  EvalIO :: GHC.HasCallStack
+  EvalIO :: HasCallStack
     => IO a
     -> Hedgehog m a
 
-  WriteLog :: ()
-    => H.Log
-    -> Hedgehog m ()
-
-  FailWith :: GHC.HasCallStack
+  FailWith :: HasCallStack
     => Maybe H.Diff
     -> String
     -> Hedgehog m a
 
   FailWithCustom :: ()
-    => GHC.CallStack
+    => CallStack
     -> Maybe H.Diff
     -> String
     -> Hedgehog m a
 
+  ThrowAssertion :: HasCallStack
+    => H.Failure
+    -> Hedgehog m a
+
+  WriteLog :: HasCallStack
+    => H.Log
+    -> Hedgehog m ()
+
 makeSem ''Hedgehog
+
+trapAssertion :: ()
+  => Member Hedgehog r
+  => (H.Failure -> Sem r a)
+  -> Sem r a
+  -> Sem r a
+trapAssertion = flip catchAssertion
 
 hedgehogToMonadTestFinal :: ()
   => IO.MonadIO m
   => IO.MonadCatch m
   => H.MonadTest m
+  => I.MonadAssertion m
   => Member (Final m) r
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToMonadTestFinal = interpretFinal \case
   AssertEquals a b ->
     liftS $ a H.=== b
+  CatchAssertion f h -> do
+    s  <- getInitialStateS
+    f' <- runS f
+    h' <- bindS h
+    pure $ I.catchAssertion f' $ \e -> do
+      h' (e <$ s)
   Eval a ->
     liftS $ H.eval a
   EvalIO f ->
@@ -85,7 +110,10 @@ hedgehogToMonadTestFinal = interpretFinal \case
   FailWith mdiff msg ->
     liftS $ H.failWith mdiff msg
   FailWithCustom cs mdiff msg ->
-    liftS $ I.failWithCustom cs mdiff msg
+    liftS $ I.failWithCustom cs
+     mdiff msg
+  ThrowAssertion e ->
+    liftS $ I.throwAssertion e
   WriteLog logValue ->
     liftS $ H.writeLog logValue
 

@@ -15,6 +15,10 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
     evalIO,
     failure,
     failMessage,
+    byDeadlineIO,
+    byDeadlineM,
+    byDurationIO,
+    byDurationM,
 
     (===),
 
@@ -33,6 +37,7 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
   ) where
 
 
+import qualified Control.Concurrent                             as IO
 import           Control.Lens                                   ((^.))
 import           Data.Aeson                                     (ToJSON, Value)
 import qualified Data.Aeson                                     as J
@@ -43,13 +48,18 @@ import qualified Data.Text                                      as T
 import qualified Data.Text.Encoding                             as T
 import qualified Data.Text.Lazy                                 as LT
 import qualified Data.Text.Lazy.Encoding                        as LT
+import           Data.Time.Clock                                (NominalDiffTime,
+                                                                 UTCTime)
+import qualified Data.Time.Clock                                as DTC
 import qualified Data.Yaml                                      as Y
 import qualified GHC.Stack                                      as GHC
 import           HaskellWorks.Polysemy.Error
 import           HaskellWorks.Polysemy.File
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
+import           HaskellWorks.Polysemy.Hedgehog.Jot
 import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory
+
 import           HaskellWorks.Polysemy.System.IO                as IO
 import           HaskellWorks.Polysemy.System.Process
 import           Polysemy
@@ -377,3 +387,80 @@ assertDirectoryMissing dir = withFrozenCallStack $ do
   exists <- doesDirectoryExist dir
     & trap @IOException (const (pure False))
   when exists $ failWithCustom GHC.callStack Nothing ("Directory '" <> dir <> "' does exist on the file system.")
+
+byDeadlineIO :: ()
+  => HasCallStack
+  => Member (Embed m) r
+  => Member (Embed IO) r
+  => Member Hedgehog r
+  => Member Log r
+  => NominalDiffTime
+  -> UTCTime
+  -> String
+  -> m a
+  -> Sem r a
+byDeadlineIO period deadline errorMessage f = GHC.withFrozenCallStack $ byDeadlineM period deadline errorMessage $ embed f
+
+-- | Run the operation 'f' once a second until it returns 'True' or the deadline expires.
+--
+-- Expiration of the deadline results in an assertion failure
+byDeadlineM ::  ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member Log r
+  => Member (Embed IO) r
+  => NominalDiffTime
+  -> UTCTime
+  -> String
+  -> Sem r a
+  -> Sem r a
+byDeadlineM period deadline errorMessage f = GHC.withFrozenCallStack $ do
+  start <- embed DTC.getCurrentTime
+  a <- goM
+  end <- embed DTC.getCurrentTime
+  jot_ $ "Operation completed in " <> show (DTC.diffUTCTime end start)
+  return a
+  where goM = catchAssertion f $ \e -> do
+          currentTime <- embed DTC.getCurrentTime
+          if currentTime < deadline
+            then do
+              embed $ IO.threadDelay (floor (DTC.nominalDiffTimeToSeconds period * 1000000))
+              goM
+            else do
+              jotShow_ currentTime
+              void $ failMessage GHC.callStack $ "Condition not met by deadline: " <> errorMessage
+              throwAssertion e
+
+-- | Run the operation 'f' once a second until it returns 'True' or the duration expires.
+--
+-- Expiration of the duration results in an assertion failure
+byDurationIO :: ()
+  => HasCallStack
+  => Member (Embed m) r
+  => Member (Embed IO) r
+  => Member Hedgehog r
+  => Member Log r
+  => NominalDiffTime
+  -> NominalDiffTime
+  -> String
+  -> m b
+  -> Sem r b
+byDurationIO period duration errorMessage f =
+  GHC.withFrozenCallStack $ byDurationM period duration errorMessage $ embed f
+
+-- | Run the operation 'f' once a second until it returns 'True' or the duration expires.
+--
+-- Expiration of the duration results in an assertion failure
+byDurationM :: ()
+  => HasCallStack
+  => Member (Embed IO) r
+  => Member Hedgehog r
+  => Member Log r
+  => NominalDiffTime
+  -> NominalDiffTime
+  -> String
+  -> Sem r b
+  -> Sem r b
+byDurationM period duration errorMessage f = GHC.withFrozenCallStack $ do
+  deadline <- DTC.addUTCTime duration <$> embed DTC.getCurrentTime
+  byDeadlineM period deadline errorMessage f

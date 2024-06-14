@@ -45,6 +45,7 @@ common tasty-hedgehog             { build-depends: tasty-hedgehog               
 common temporary                  { build-depends: temporary                                   < 1.4    }
 common text                       { build-depends: text                                        < 3      }
 common time                       { build-depends: time                                        < 2      }
+common transformers               { build-depends: transformers                                < 0.7    }
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
 common yaml                       { build-depends: yaml                                        < 0.12   }
 
@@ -169,7 +170,10 @@ library hedgehog
                         polysemy-time,
                         polysemy,
                         process,
+                        resourcet,
                         text,
+                        time,
+                        transformers,
                         yaml,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Hedgehog
