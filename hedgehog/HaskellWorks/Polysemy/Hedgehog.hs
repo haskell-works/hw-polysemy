@@ -24,6 +24,11 @@ module HaskellWorks.Polysemy.Hedgehog
     failMessage,
     (===),
 
+    byDeadlineIO,
+    byDeadlineM,
+    byDurationIO,
+    byDurationM,
+
     eval,
     evalM,
     evalIO,

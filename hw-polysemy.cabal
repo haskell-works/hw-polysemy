@@ -172,6 +172,7 @@ library hedgehog
                         process,
                         resourcet,
                         text,
+                        time,
                         transformers,
                         yaml,
   visibility:           public
