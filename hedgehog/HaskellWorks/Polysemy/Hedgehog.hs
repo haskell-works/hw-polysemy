@@ -33,6 +33,10 @@ module HaskellWorks.Polysemy.Hedgehog
     evalIO_,
     evalM_,
 
+    catchAssertion,
+    throwAssertion,
+    trapAssertion,
+
     jotShow,
     jotShow_,
     jotJson,
