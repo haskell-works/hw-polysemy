@@ -32,6 +32,7 @@ import qualified HaskellWorks.Polysemy.System.IO                as PIO
 -- The directory will be deleted if the block succeeds, but left behind if
 -- the block fails.
 workspace :: ()
+  => HasCallStack
   => Member Hedgehog r
   => Member Log r
   => Member (Embed IO) r
@@ -62,6 +63,7 @@ workspace prefixPath f = withFrozenCallStack $ do
 --
 -- The 'prefix' argument should not contain directory delimeters.
 moduleWorkspace ::  ()
+  => HasCallStack
   => Member Hedgehog r
   => Member Log r
   => Member (Embed IO) r
