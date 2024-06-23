@@ -129,6 +129,7 @@ library core
                         HaskellWorks.Polysemy.Control.Concurrent.QSem
                         HaskellWorks.Polysemy.Control.Concurrent.STM
                         HaskellWorks.Polysemy.Control.Concurrent.STM.TVar
+                        HaskellWorks.Polysemy.Data.Aeson
                         HaskellWorks.Polysemy.Data.ByteString
                         HaskellWorks.Polysemy.Data.ByteString.Lazy
                         HaskellWorks.Polysemy.Data.ByteString.Strict
