@@ -1,6 +1,6 @@
 module HaskellWorks.Polysemy.Data.ByteString.Lazy
-  ( -- * Strict @ByteString@
-    ByteString,
+  ( -- * Lazy @ByteString@
+    LBS.ByteString,
 
     -- * Introducing and eliminating 'ByteString's
     LBS.empty,
