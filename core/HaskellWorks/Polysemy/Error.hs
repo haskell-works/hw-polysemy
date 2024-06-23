@@ -2,8 +2,11 @@ module HaskellWorks.Polysemy.Error
   ( module HaskellWorks.Error
   , trap
   , trap_
+  , embedRunExceptT
+  , embedThrowExceptT
   ) where
 
+import           Control.Monad.Except
 import           HaskellWorks.Error
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
@@ -26,3 +29,19 @@ trap_ :: forall e r a. ()
   -> Sem r a
 trap_ h =
   trap (const h)
+
+embedRunExceptT :: ()
+  => Member (Embed m) r
+  => ExceptT e m a
+  -> Sem r (Either e a)
+embedRunExceptT = embed . runExceptT
+
+-- | Run an embedded 'ExceptT' effect in a 'Sem' monad and throw any errors.
+embedThrowExceptT :: ()
+  => Member (Error e) r
+  => Member (Embed m) r
+  => ExceptT e m a
+  -> Sem r a
+embedThrowExceptT f =
+  embedRunExceptT f
+    & onLeftM throw
