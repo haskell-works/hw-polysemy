@@ -44,6 +44,8 @@ module HaskellWorks.Polysemy
     catch,
     trap,
     trap_,
+    embedRunExceptT,
+    embedThrowExceptT,
     fromEither,
     fromEitherM,
     fromException,
