@@ -90,6 +90,7 @@ library core
                         async,
                         bytestring,
                         contravariant,
+                        exceptions,
                         directory,
                         filepath,
                         generic-lens,
@@ -139,6 +140,7 @@ library core
                         HaskellWorks.Polysemy.Data.Text.Strict
                         HaskellWorks.Polysemy.Error
                         HaskellWorks.Polysemy.Error.Types
+                        HaskellWorks.Polysemy.Except
                         HaskellWorks.Polysemy.File
                         HaskellWorks.Polysemy.FilePath
                         HaskellWorks.Polysemy.OS
@@ -169,6 +171,7 @@ library hedgehog
                         hedgehog,
                         hw-polysemy-core,
                         lens,
+                        mtl,
                         polysemy-log,
                         polysemy-time,
                         polysemy,
