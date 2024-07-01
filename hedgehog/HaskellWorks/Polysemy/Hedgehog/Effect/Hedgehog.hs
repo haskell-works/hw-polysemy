@@ -19,6 +19,8 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   , hedgehogToPropertyFinal
   , hedgehogToTestFinal
 
+  , catchExToPropertyFinal
+
   ) where
 
 import           HaskellWorks.Polysemy.Prelude
@@ -28,6 +30,7 @@ import qualified Hedgehog.Internal.Property                              as H
 
 import qualified Control.Monad.Catch                                     as IO
 import qualified Control.Monad.IO.Class                                  as IO
+import           HaskellWorks.Polysemy.Except
 import qualified HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal as I
 import           Polysemy
 import           Polysemy.Final
@@ -128,3 +131,10 @@ hedgehogToTestFinal :: ()
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToTestFinal = hedgehogToMonadTestFinal
+
+catchExToPropertyFinal :: ()
+  => Member (Final (H.PropertyT IO)) r
+  => Sem (Except ': r) a
+  -> Sem r a
+catchExToPropertyFinal = catchExToFinal
+{-# INLINE catchExToPropertyFinal #-}
