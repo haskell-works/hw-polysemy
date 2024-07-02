@@ -14,12 +14,11 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   , failWithCustom
   , throwAssertion
   , trapAssertion
+  , catchEx
 
   , hedgehogToMonadTestFinal
   , hedgehogToPropertyFinal
   , hedgehogToTestFinal
-
-  , catchExToPropertyFinal
 
   ) where
 
@@ -131,10 +130,3 @@ hedgehogToTestFinal :: ()
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToTestFinal = hedgehogToMonadTestFinal
-
-catchExToPropertyFinal :: ()
-  => Member (Final (H.PropertyT IO)) r
-  => Sem (Except ': r) a
-  -> Sem r a
-catchExToPropertyFinal = catchExToFinal
-{-# INLINE catchExToPropertyFinal #-}

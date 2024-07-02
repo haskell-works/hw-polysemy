@@ -1,71 +1,85 @@
-{-# LANGUAGE GADTs           #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GADTs #-}
 
 -- | Description: The 'Except' effect, providing catch and throw functionality over the final
 -- monad via MonadCatch.
 module HaskellWorks.Polysemy.Except
-  ( -- * Effect
-    Except (..),
-
-    -- * Actions
-    catchEx,
+  ( catchEx,
     throwEx,
-
-    -- * Interpretations
-    catchExToFinal,
-    catchExToFinalIO,
+    mask,
+    maskM,
+    uninterruptibleMask,
+    uninterruptibleMaskM,
   ) where
 
 import           Control.Exception    (Exception (..))
+import           Control.Monad.Catch  (MonadCatch, MonadMask, MonadThrow)
 import qualified Control.Monad.Catch  as X
 import           HaskellWorks.Prelude
 import           Polysemy
 import           Polysemy.Final
 
-------------------------------------------------------------------------------
--- | An effect capable of providing 'X.catch' and 'X.throwM' semantics. Interpreters for
--- this will successfully run the catch the exceptions thrown in the IO monad.
-data Except m a where
-  CatchEx
-    :: Exception e
-    => m a
-    -> (e -> m a)
-    -> Except m a
-
-  ThrowEx
-    :: Exception e
-    => e
-    -> Except m a
-
-makeSem ''Except
-
-------------------------------------------------------------------------------
--- | Run a 'Except' effect in terms of 'X.catch' and 'X.throwM' through final monad.
---
--- /Beware/: Effects that aren't interpreted in terms of 'IO'
--- will have local state semantics in regards to 'Except' effects
--- interpreted this way. See 'Final'.
-catchExToFinal :: forall m r a.()
-  => X.MonadCatch m
-  => X.MonadThrow m
+catchEx :: ()
+  => MonadCatch m
   => Member (Final m) r
-  => Sem (Except ': r) a
+  => Exception e
+  => Sem r a
+  -> (e -> Sem r a)
   -> Sem r a
-catchExToFinal = interpretFinal $ \case
-  CatchEx f h -> do
-    s  <- getInitialStateS
-    a  <- runS f
-    h' <- bindS h
-    pure $ X.catch a $ \e -> h' $ e <$ s
-  ThrowEx e ->
-    pure $ X.throwM e
-{-# INLINE catchExToFinal #-}
+catchEx f h =
+  withWeavingToFinal \s lower _ ->
+    X.catch (lower (f <$ s)) \e -> lower (h e <$ s)
 
-------------------------------------------------------------------------------
--- | Run a 'Except' effect in terms of 'X.catch' and 'X.throwM' through final IO monad.
-catchExToFinalIO :: forall r a.()
-  => Member (Final IO) r
-  => Sem (Except ': r) a
+throwEx :: ()
+  => MonadThrow m
+  => Member (Final m) r
+  => Exception e
+  => e
   -> Sem r a
-catchExToFinalIO = catchExToFinal
-{-# INLINE catchExToFinalIO #-}
+throwEx e =
+  embedFinal $ X.throwM e
+
+maskM :: ()
+  => MonadMask m
+  => Member (Final m) r
+  => ((forall . m b -> m b) -> Sem r a)
+  -> Sem r a
+maskM f =
+  withWeavingToFinal \s lower _ ->
+    X.mask \restore ->
+      lower (f restore <$ s)
+
+mask :: ()
+  => MonadMask m
+  => Member (Final m) r
+  => ((forall b. Sem r b -> Sem r b) -> Sem r a)
+  -> Sem r a
+mask f =
+  withWeavingToFinal \s lower _ ->
+    X.mask \restore ->
+      lower $ f (\a ->
+        withWeavingToFinal \s2 lower2 _ ->
+          restore $ lower2 (a <$ s2)
+      ) <$ s
+
+uninterruptibleMaskM :: ()
+  => MonadMask m
+  => Member (Final m) r
+  => ((forall . m b -> m b) -> Sem r a)
+  -> Sem r a
+uninterruptibleMaskM f =
+  withWeavingToFinal \s lower _ ->
+    X.uninterruptibleMask \restore ->
+      lower (f restore <$ s)
+
+uninterruptibleMask :: ()
+  => MonadMask m
+  => Member (Final m) r
+  => ((forall b. Sem r b -> Sem r b) -> Sem r a)
+  -> Sem r a
+uninterruptibleMask f =
+  withWeavingToFinal \s lower _ ->
+    X.uninterruptibleMask \restore ->
+      lower $ f (\a ->
+        withWeavingToFinal \s2 lower2 _ ->
+          restore $ lower2 (a <$ s2)
+      ) <$ s
