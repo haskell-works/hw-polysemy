@@ -123,6 +123,7 @@ library core
                         HaskellWorks.IO.Network.Port
                         HaskellWorks.IO.Network.Socket
                         HaskellWorks.IO.Process
+                        HaskellWorks.Orphans
                         HaskellWorks.Polysemy
                         HaskellWorks.Polysemy.Cabal
                         HaskellWorks.Polysemy.Cabal.Types
