@@ -20,6 +20,9 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   , hedgehogToPropertyFinal
   , hedgehogToTestFinal
 
+  , runManagedToTestFinal
+  , runManagedToPropertyFinal
+
   ) where
 
 import           HaskellWorks.Polysemy.Prelude
@@ -29,10 +32,13 @@ import qualified Hedgehog.Internal.Property                              as H
 
 import qualified Control.Monad.Catch                                     as IO
 import qualified Control.Monad.IO.Class                                  as IO
+import           HaskellWorks.Orphans                                    ()
 import           HaskellWorks.Polysemy.Except
 import qualified HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal as I
+import           HaskellWorks.Polysemy.Managed
 import           Polysemy
 import           Polysemy.Final
+import           Polysemy.Resource
 
 data Hedgehog m rv where
   AssertEquals :: (HasCallStack, Eq a, Show a)
@@ -130,3 +136,17 @@ hedgehogToTestFinal :: ()
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToTestFinal = hedgehogToMonadTestFinal
+
+runManagedToPropertyFinal :: ()
+  => Member (Final (H.PropertyT IO)) r
+  => Member Resource r
+  => Sem (Managed ': r) a
+  -> Sem r a
+runManagedToPropertyFinal = runManagedToFinal
+
+runManagedToTestFinal :: ()
+  => Member (Final (H.TestT IO)) r
+  => Member Resource r
+  => Sem (Managed ': r) a
+  -> Sem r a
+runManagedToTestFinal = runManagedToFinal
