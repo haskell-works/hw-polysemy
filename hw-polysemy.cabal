@@ -38,6 +38,7 @@ common polysemy                   { build-depends: polysemy                     
 common polysemy-log               { build-depends: polysemy-log                                < 0.11   }
 common polysemy-plugin            { build-depends: polysemy-plugin                             < 0.5    }
 common polysemy-time              { build-depends: polysemy-time                               < 0.7    }
+common prettyprinter              { build-depends: prettyprinter                               < 1.8    }
 common process                    { build-depends: process                                     < 1.7    }
 common resourcet                  { build-depends: resourcet                                   < 1.4    }
 common stm                        { build-depends: stm                                         < 2.6    }
@@ -175,6 +176,7 @@ library hedgehog
                         polysemy-log,
                         polysemy-time,
                         polysemy,
+                        prettyprinter,
                         process,
                         resourcet,
                         text,
