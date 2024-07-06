@@ -6,6 +6,8 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
     leftFailJsonM,
     leftFailJsonPretty,
     leftFailJsonPrettyM,
+    leftFailPretty,
+    leftFailPrettyM,
     leftFailYaml,
     leftFailYamlM,
     nothingFail,
@@ -63,6 +65,9 @@ import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 import           HaskellWorks.Polysemy.Hedgehog.Jot
 import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory
+import           Prettyprinter                                  (Pretty)
+import qualified Prettyprinter                                  as PP
+import qualified Prettyprinter.Render.String                    as PP
 
 import           HaskellWorks.Polysemy.System.IO                as IO
 import           HaskellWorks.Polysemy.System.Process
@@ -146,6 +151,29 @@ leftFailJsonM :: forall e r a. ()
   -> Sem r a
 leftFailJsonM f =
   withFrozenCallStack $ f >>= leftFailJson
+
+-- | Fail when the result is Left with the error message as JSON.
+leftFailPretty :: ()
+  => Member Hedgehog r
+  => Pretty e
+  => HasCallStack
+  => Either e a
+  -> Sem r a
+leftFailPretty r =
+  withFrozenCallStack $ case r of
+    Right a -> pure a
+    Left e  -> do
+      let msg = PP.renderString $ PP.layoutPretty PP.defaultLayoutOptions $ PP.pretty e
+      failMessage GHC.callStack ("Expected Right: " <> msg)
+
+leftFailPrettyM :: forall e r a. ()
+  => Member Hedgehog r
+  => Pretty e
+  => HasCallStack
+  => Sem r (Either e a)
+  -> Sem r a
+leftFailPrettyM f =
+  withFrozenCallStack $ f >>= leftFailPretty
 
 -- | Fail when the result is Left with the error message as JSON.
 leftFailJsonPretty :: ()
