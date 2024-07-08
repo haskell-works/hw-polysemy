@@ -22,6 +22,7 @@ common base                       { build-depends: base                       >=
 common aeson                      { build-depends: aeson                                       < 2.3    }
 common aeson-pretty               { build-depends: aeson-pretty                                < 0.9    }
 common async                      { build-depends: async                                       < 2.3    }
+common amazonka                   { build-depends: amazonka                   >= 2          && < 3      }
 common bytestring                 { build-depends: bytestring                                  < 0.13   }
 common contravariant              { build-depends: contravariant                               < 1.6    }
 common Diff                       { build-depends: Diff                                        < 0.6    }
@@ -56,6 +57,7 @@ common Win32
     build-depends:      Win32   >= 2.5.4.1
 
 common hw-polysemy                { build-depends: hw-polysemy                                          }
+common hw-polysemy-amazonka       { build-depends: hw-polysemy:amazonka                                 }
 common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
 common hw-polysemy-hedgehog       { build-depends: hw-polysemy:hedgehog                                 }
 
@@ -199,6 +201,16 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Workspace
                         HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   hs-source-dirs:       hedgehog
+  default-language:     Haskell2010
+
+library amazonka
+  import:               base, project-config,
+                        amazonka,
+                        hw-polysemy-core,
+                        resourcet,
+  visibility:           public
+  exposed-modules:      HaskellWorks.Polysemy.Amazonka
+  hs-source-dirs:       amazonka
   default-language:     Haskell2010
 
 library
