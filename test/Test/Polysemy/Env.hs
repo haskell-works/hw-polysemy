@@ -18,13 +18,15 @@ module Test.Polysemy.Env
   ) where
 
 import qualified Amazonka                                 as AWS
-import           Control.Lens                             ((%~), (.~))
+import qualified Amazonka.Auth                            as AWS
+import           Control.Lens                             ((%~), (.~), (^.))
 import           Data.Generics.Product.Any
 import           HaskellWorks.Polysemy.Amazonka
 import           HaskellWorks.Polysemy.Error
 import           HaskellWorks.Polysemy.Hedgehog
 import           HaskellWorks.Polysemy.System.Environment
 import           HaskellWorks.Prelude
+import           HaskellWorks.TestContainers.LocalStack
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Reader
@@ -51,14 +53,15 @@ runLocalTestEnv :: ()
   => HasCallStack
   => Member (Embed IO) r
   => Member Hedgehog r
-  => Sem
+  => IO LocalStackEndpoint
+  -> Sem
         ( Reader AWS.Env
         : r)
       a
   -> Sem r a
-runLocalTestEnv f =
+runLocalTestEnv mk f =
   withFrozenCallStack $ f
-    & runReaderLocalAwsEnvDiscover
+    & runReaderLocalAwsEnvDiscover mk
 
 runReaderFromEnvOrFail :: forall i r a. ()
   => Member (Embed IO) r
@@ -75,15 +78,22 @@ runReaderFromEnvOrFail f envVar action = do
 
 runReaderLocalAwsEnvDiscover :: ()
   => Member (Embed IO) r
-  => Sem (Reader AWS.Env : r) a
+  => IO LocalStackEndpoint
+  -> Sem (Reader AWS.Env : r) a
   -> Sem r a
-runReaderLocalAwsEnvDiscover f = do
+runReaderLocalAwsEnvDiscover mk f = do
+  ep <- embed mk
+
   logger' <- embed $ AWS.newLogger AWS.Debug IO.stdout
-  discoveredAwsEnv <- embed $ AWS.newEnv AWS.discover
+
+  let creds = AWS.fromKeys (AWS.AccessKey "test") (AWS.SecretKey "test")
+
+  credEnv <- embed $ AWS.newEnv (AWS.runCredentialChain [pure . creds])
+
   awsEnv <- pure $
-    discoveredAwsEnv
+    credEnv
       & the @"logger" .~ logger'
-      & the @"overrides" %~ (. AWS.setEndpoint False "localhost" 4566)
+      & the @"overrides" %~ (. AWS.setEndpoint False "localhost" (ep ^. the @"port"))
 
   runReader awsEnv f
 
