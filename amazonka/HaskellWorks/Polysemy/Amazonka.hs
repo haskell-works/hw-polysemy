@@ -2,7 +2,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module HaskellWorks.Polysemy.Amazonka
-  ( sendAws
+  ( runReaderAwsEnvDiscover,
+    sendAws,
   ) where
 
 import           Control.Monad.IO.Class
@@ -14,6 +15,17 @@ import           HaskellWorks.Prelude
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Reader
+import qualified System.IO                    as IO
+
+runReaderAwsEnvDiscover :: ()
+  => Member (Embed IO) r
+  => Sem (Reader AWS.Env : r) a
+  -> Sem r a
+runReaderAwsEnvDiscover f = do
+  logger' <- embed $ AWS.newLogger AWS.Debug IO.stdout
+  discoveredAwsEnv <- embed $ AWS.newEnv AWS.discover
+  let awsEnv = discoveredAwsEnv { AWS.logger = logger' }
+  runReader awsEnv f
 
 sendAws :: ()
   => AWS.AWSRequest a

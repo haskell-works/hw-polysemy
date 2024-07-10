@@ -305,4 +305,6 @@ test-suite hw-polysemy-test
   hs-source-dirs:       test
   main-is:              Main.hs
   other-modules:        HaskellWorks.Polysemy.HedgehogSpec
+                        HaskellWorks.Polysemy.TestContainers.LocalStackSpec
+                        Test.Polysemy.Env
   ghc-options:          -threaded -rtsopts -with-rtsopts=-N -with-rtsopts=-T

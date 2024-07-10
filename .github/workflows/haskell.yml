@@ -71,6 +71,10 @@ jobs:
         run: cabal build all --enable-tests --enable-benchmarks
 
       - name: Test
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: cabal test all --enable-tests --enable-benchmarks
 
   check:
