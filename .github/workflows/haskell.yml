@@ -18,10 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         ghc: ["9.6.5", "9.8.2"]
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - ghc: "9.8.2"
-            os: macOS-latest
+        os:
+          - ubuntu-latest
+          # - windows-latest
+        # include:
+        #   - ghc: "9.8.2"
+        #     os: macOS-latest
 
     env:
       # Modify this value to "invalidate" the cabal cache.
@@ -71,6 +73,8 @@ jobs:
         run: cabal build all --enable-tests --enable-benchmarks
 
       - name: Test
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         run: cabal test all --enable-tests --enable-benchmarks
 
   check:

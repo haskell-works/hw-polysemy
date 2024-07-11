@@ -32,16 +32,16 @@ propertyOnce :: ()
         , Final (H.PropertyT IO)
         ] ()
   -> H.Property
-propertyOnce f = f
-  & interpretLogDataLog
-  & setLogLevel (Just Info)
-  & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
-  & interpretDataLogHedgehog id (const GHC.callStack)
-  & interpretTimeGhc
-  & hedgehogToPropertyFinal
-  & runEmbedded liftIO
-  & embedToFinal @(H.PropertyT IO)
-  & runResource
-  & runFinal
-  & H.property
-  & H.withTests 1
+propertyOnce f =
+    f & interpretLogDataLog
+      & setLogLevel (Just Info)
+      & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
+      & interpretDataLogHedgehog id (const GHC.callStack)
+      & interpretTimeGhc
+      & hedgehogToPropertyFinal
+      & runEmbedded liftIO
+      & embedToFinal @(H.PropertyT IO)
+      & runResource
+      & runFinal
+      & H.property
+      & H.withTests 1

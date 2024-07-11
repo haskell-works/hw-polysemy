@@ -22,6 +22,8 @@ common base                       { build-depends: base                       >=
 common aeson                      { build-depends: aeson                                       < 2.3    }
 common aeson-pretty               { build-depends: aeson-pretty                                < 0.9    }
 common async                      { build-depends: async                                       < 2.3    }
+common amazonka                   { build-depends: amazonka                   >= 2          && < 3      }
+common amazonka-s3                { build-depends: amazonka-s3                >= 2          && < 3      }
 common bytestring                 { build-depends: bytestring                                  < 0.13   }
 common contravariant              { build-depends: contravariant                               < 1.6    }
 common Diff                       { build-depends: Diff                                        < 0.6    }
@@ -30,6 +32,7 @@ common exceptions                 { build-depends: exceptions                   
 common filepath                   { build-depends: filepath                                    < 1.6    }
 common generic-lens               { build-depends: generic-lens                                < 2.3    }
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.12   }
+common http-conduit               { build-depends: http-conduit               >= 2.3        && < 2.4    }
 common hedgehog                   { build-depends: hedgehog                                    < 1.5    }
 common network                    { build-depends: network                                     < 3.3    }
 common lens                       { build-depends: lens                                        < 5.4    }
@@ -43,9 +46,11 @@ common process                    { build-depends: process                      
 common resourcet                  { build-depends: resourcet                                   < 1.4    }
 common stm                        { build-depends: stm                                         < 2.6    }
 common tasty                      { build-depends: tasty                                       < 1.6    }
+common tasty-discover             { build-depends: tasty-discover                              < 6      }
 common tasty-hedgehog             { build-depends: tasty-hedgehog                              < 1.5    }
 common temporary                  { build-depends: temporary                                   < 1.4    }
 common text                       { build-depends: text                                        < 3      }
+common testcontainers             { build-depends: testcontainers                              < 0.6    }
 common time                       { build-depends: time                                        < 2      }
 common transformers               { build-depends: transformers                                < 0.7    }
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
@@ -55,9 +60,11 @@ common Win32
   if os(windows)
     build-depends:      Win32   >= 2.5.4.1
 
-common hw-polysemy                { build-depends: hw-polysemy                                          }
-common hw-polysemy-core           { build-depends: hw-polysemy:core                                     }
-common hw-polysemy-hedgehog       { build-depends: hw-polysemy:hedgehog                                 }
+common hw-polysemy                            { build-depends: hw-polysemy                                          }
+common hw-polysemy-amazonka                   { build-depends: hw-polysemy:amazonka                                 }
+common hw-polysemy-core                       { build-depends: hw-polysemy:core                                     }
+common hw-polysemy-hedgehog                   { build-depends: hw-polysemy:hedgehog                                 }
+common hw-polysemy-testcontainers-localstack  { build-depends: hw-polysemy:testcontainers-localstack                }
 
 flag werror
   description: Enable -Werror
@@ -201,6 +208,33 @@ library hedgehog
   hs-source-dirs:       hedgehog
   default-language:     Haskell2010
 
+library amazonka
+  import:               base, project-config,
+                        amazonka,
+                        hw-polysemy-core,
+                        resourcet,
+  visibility:           public
+  exposed-modules:      HaskellWorks.Polysemy.Amazonka
+  hs-source-dirs:       amazonka
+  default-language:     Haskell2010
+
+library testcontainers-localstack
+  import:               base, project-config,
+                        bytestring,
+                        generic-lens,
+                        http-conduit,
+                        hw-polysemy-core,
+                        lens,
+                        testcontainers,
+                        text,
+                        time,
+                        resourcet,
+  visibility:           public
+  exposed-modules:      HaskellWorks.TestContainers.LocalStack
+                        HaskellWorks.TestContainers.LocalStack.Types
+  hs-source-dirs:       testcontainers-localstack
+  default-language:     Haskell2010
+
 library
   import:               base, project-config,
                         hw-polysemy-core,
@@ -249,12 +283,21 @@ library
 
 test-suite hw-polysemy-test
   import:               base, project-config,
+                        amazonka,
+                        amazonka-s3,
                         filepath,
+                        generic-lens,
+                        hw-polysemy-amazonka,
+                        hw-polysemy-core,
+                        hw-polysemy-testcontainers-localstack,
                         hw-polysemy,
-                        polysemy,
+                        lens,
                         polysemy-log,
+                        polysemy,
+                        tasty-discover,
                         tasty-hedgehog,
                         tasty,
+                        testcontainers,
                         text,
   default-language:     Haskell2010
   type:                 exitcode-stdio-1.0
@@ -262,4 +305,6 @@ test-suite hw-polysemy-test
   hs-source-dirs:       test
   main-is:              Main.hs
   other-modules:        HaskellWorks.Polysemy.HedgehogSpec
+                        HaskellWorks.Polysemy.TestContainers.LocalStackSpec
+                        Test.Polysemy.Env
   ghc-options:          -threaded -rtsopts -with-rtsopts=-N -with-rtsopts=-T
