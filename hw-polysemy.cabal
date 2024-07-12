@@ -220,17 +220,22 @@ library amazonka
 
 library testcontainers-localstack
   import:               base, project-config,
+                        amazonka,
                         bytestring,
                         generic-lens,
                         http-conduit,
+                        hw-polysemy-amazonka,
                         hw-polysemy-core,
+                        hw-polysemy-hedgehog,
                         lens,
+                        resourcet,
+                        resourcet,
                         testcontainers,
                         text,
                         time,
-                        resourcet,
   visibility:           public
-  exposed-modules:      HaskellWorks.TestContainers.LocalStack
+  exposed-modules:      HaskellWorks.Polysemy.Amazonka.LocalStack
+                        HaskellWorks.TestContainers.LocalStack
                         HaskellWorks.TestContainers.LocalStack.Types
   hs-source-dirs:       testcontainers-localstack
   default-language:     Haskell2010
