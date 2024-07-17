@@ -23,10 +23,10 @@ import           HaskellWorks.Polysemy.Error
 import           HaskellWorks.Polysemy.Hedgehog
 import           HaskellWorks.Polysemy.System.Environment
 import           HaskellWorks.Prelude
-import           HaskellWorks.TestContainers.LocalStack
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Reader
+import qualified TestContainers.Tasty                      as TC
 
 newtype EnvironmentVariableMissing =
   EnvironmentVariableMissing String
@@ -49,7 +49,7 @@ runLocalTestEnv :: ()
   => HasCallStack
   => Member (Embed IO) r
   => Member Hedgehog r
-  => IO LocalStackEndpoint
+  => IO TC.Container
   -> Sem
         ( Reader AWS.Env
         : r)

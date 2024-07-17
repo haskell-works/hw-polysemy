@@ -11,23 +11,26 @@ import           Prelude
 
 import           HaskellWorks.TestContainers.LocalStack
 import           Test.Polysemy.Env
-import qualified Test.Tasty                             as Tasty
-import qualified Test.Tasty.Hedgehog                    as H
+import qualified Test.Tasty                                as Tasty
+import qualified Test.Tasty.Hedgehog                       as H
 
-import qualified Amazonka.S3                            as AWS
+import qualified Amazonka.S3                               as AWS
 import           HaskellWorks.Polysemy.Amazonka
+import           HaskellWorks.Polysemy.Amazonka.LocalStack
 import           HaskellWorks.Polysemy.Hedgehog
 import           HaskellWorks.Prelude
 import           Polysemy
-import qualified TestContainers.Tasty                   as TC
+import qualified TestContainers.Tasty                      as TC
 
 {- HLINT ignore "Use camelCase" -}
 
 tasty_local_stack :: Tasty.TestTree
 tasty_local_stack =
-  TC.withContainers setupContainers $ \start ->
-    H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv start $ do
-      ep <- embed start
+  TC.withContainers setupContainers $ \getContainer ->
+    H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv getContainer $ do
+      container <- embed getContainer
+      ep <- getLocalStackEndpoint container
+      jotYamlM_ $ inspectContainer container
       jotShow_ ep
       listBucketsReq <- pure AWS.newListBuckets
 
