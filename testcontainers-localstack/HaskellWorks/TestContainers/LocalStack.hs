@@ -1,5 +1,4 @@
 {-# LANGUAGE GADTs             #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 
@@ -18,17 +17,14 @@ import           Control.Concurrent                           (threadDelay)
 import           Control.Exception                            (try)
 import           Control.Monad                                (when)
 import           Control.Monad.IO.Class
-import qualified Data.ByteString                              as BS
 import qualified Data.ByteString.Lazy                         as LBS
 import           Data.Function
 import qualified Data.Text                                    as T
 import           Data.Time.Clock.POSIX                        (getPOSIXTime)
-import qualified Data.Yaml                                    as Y
 import           HaskellWorks.TestContainers.LocalStack.Types (LocalStackEndpoint (LocalStackEndpoint))
 import           Network.HTTP.Conduit                         (HttpException,
                                                                simpleHttp)
 import qualified System.Environment                           as IO
-import qualified System.IO                                    as IO
 import qualified TestContainers.Monad                         as TC
 import qualified TestContainers.Tasty                         as TC
 
@@ -49,10 +45,6 @@ setupContainers = do
     -- Wait until the container is ready to accept requests. `run` blocks until
     -- readiness can be established.
     & TC.setWaitingFor (TC.waitUntilMappedPortReachable 4566)
-
-  json <- liftIO $ TC.runTestContainer TC.defaultDockerConfig $ TC.inspect localstackContainer
-
-  liftIO $ BS.hPut IO.stdout $ "Local stack container: " <> Y.encode json
 
   -- Look up the corresponding port on the host machine for the exposed port 4566.
   let localStackPort = TC.containerPort localstackContainer 4566
