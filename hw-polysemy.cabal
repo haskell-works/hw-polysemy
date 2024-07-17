@@ -220,6 +220,7 @@ library amazonka
 
 library testcontainers-localstack
   import:               base, project-config,
+                        aeson,
                         amazonka,
                         bytestring,
                         generic-lens,
@@ -233,6 +234,7 @@ library testcontainers-localstack
                         testcontainers,
                         text,
                         time,
+                        yaml,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Amazonka.LocalStack
                         HaskellWorks.TestContainers.LocalStack

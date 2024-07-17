@@ -1,10 +1,13 @@
 {-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 
 {- HLINT ignore "Use camelCase" -}
 
 module HaskellWorks.TestContainers.LocalStack
   ( LocalStackEndpoint(..)
+  , TC.Container
   , setupContainers
   , waitForLocalStack
   ) where
@@ -15,19 +18,22 @@ import           Control.Concurrent                           (threadDelay)
 import           Control.Exception                            (try)
 import           Control.Monad                                (when)
 import           Control.Monad.IO.Class
+import qualified Data.ByteString                              as BS
 import qualified Data.ByteString.Lazy                         as LBS
 import           Data.Function
 import qualified Data.Text                                    as T
 import           Data.Time.Clock.POSIX                        (getPOSIXTime)
+import qualified Data.Yaml                                    as Y
 import           HaskellWorks.TestContainers.LocalStack.Types (LocalStackEndpoint (LocalStackEndpoint))
-import qualified HaskellWorks.TestContainers.LocalStack.Types as Z
 import           Network.HTTP.Conduit                         (HttpException,
                                                                simpleHttp)
 import qualified System.Environment                           as IO
+import qualified System.IO                                    as IO
+import qualified TestContainers.Monad                         as TC
 import qualified TestContainers.Tasty                         as TC
 
 -- | Sets up and runs the containers required for this test suite.
-setupContainers :: TC.MonadDocker m => m LocalStackEndpoint
+setupContainers :: TC.MonadDocker m => m TC.Container
 setupContainers = do
   authToken <- liftIO $ IO.lookupEnv "LOCALSTACK_AUTH_TOKEN"
   -- Launch the container based on the postgres image.
@@ -38,22 +44,22 @@ setupContainers = do
     & TC.setExpose
         ( mconcat
             [ [ 4566 ]
-            , fmap fromInteger [4510 .. 4559]
             ]
         )
     -- Wait until the container is ready to accept requests. `run` blocks until
     -- readiness can be established.
     & TC.setWaitingFor (TC.waitUntilMappedPortReachable 4566)
 
+  json <- liftIO $ TC.runTestContainer TC.defaultDockerConfig $ TC.inspect localstackContainer
+
+  liftIO $ BS.hPut IO.stdout $ "Local stack container: " <> Y.encode json
+
   -- Look up the corresponding port on the host machine for the exposed port 4566.
   let localStackPort = TC.containerPort localstackContainer 4566
 
   liftIO $ waitForLocalStack "localhost" localStackPort 8
 
-  pure $ LocalStackEndpoint
-    { Z.host = "0.0.0.0"
-    , Z.port = localStackPort
-    }
+  pure localstackContainer
 
 waitForLocalStack :: String -> Int -> Int -> IO ()
 waitForLocalStack host port timeout = do
