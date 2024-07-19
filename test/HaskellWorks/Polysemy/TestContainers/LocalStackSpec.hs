@@ -35,6 +35,7 @@ tasty_local_stack =
       listBucketsReq <- pure AWS.newListBuckets
 
       listBucketResp <- sendAws listBucketsReq
+        & jotShowDataLog @AwsLogEntry
         & trapFail
 
       jotShow_ listBucketResp
