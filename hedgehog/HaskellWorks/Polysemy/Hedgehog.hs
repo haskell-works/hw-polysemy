@@ -87,6 +87,9 @@ module HaskellWorks.Polysemy.Hedgehog
     jotRootInputFile,
     jotTempFile,
 
+    jotShowDataLog,
+    jotShowDataLogLocal,
+
     Property,
 
     Workspace(..),
