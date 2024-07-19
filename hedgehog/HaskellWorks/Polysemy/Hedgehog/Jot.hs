@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE GADTs        #-}
 
 module HaskellWorks.Polysemy.Hedgehog.Jot
   ( jotShow,
@@ -41,6 +42,9 @@ module HaskellWorks.Polysemy.Hedgehog.Jot
     jotPkgInputFile,
     jotRootInputFile,
     jotTempFile,
+
+    jotShowDataLog,
+    jotShowDataLogLocal,
   ) where
 
 import           Data.Aeson                                     (ToJSON)
@@ -65,6 +69,9 @@ import           HaskellWorks.Polysemy
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 import           HaskellWorks.Polysemy.Hedgehog.Workspace.Types
 import           HaskellWorks.Polysemy.String
+import           Polysemy
+import           Polysemy.Internal.Tactics                      (liftT)
+import qualified Polysemy.Log.Effect.DataLog                    as Log
 
 -- | Annotate the given string at the context supplied by the callstack.
 jotWithCallstack :: ()
@@ -499,3 +506,28 @@ jotTempFile fp = withFrozenCallStack $ do
   let relPath = workspace <> "/" <> fp
   jot_ $ workspace <> "/" <> relPath
   return relPath
+
+jotShowDataLog :: forall a r. ()
+  => HasCallStack
+  => Show a
+  => Member Hedgehog r
+  => InterpreterFor (DataLog a) r
+jotShowDataLog =
+  withFrozenCallStack $
+    jotShowDataLogLocal id
+{-# inline jotShowDataLog #-}
+
+jotShowDataLogLocal :: forall a r. ()
+  => HasCallStack
+  => Show a
+  => Member Hedgehog r
+  => (a -> a)
+  -> InterpreterFor (DataLog a) r
+jotShowDataLogLocal context =
+  withFrozenCallStack $
+    interpretH \case
+      Log.DataLog a ->
+        liftT (jotShow_ (context a))
+      Log.Local f ma ->
+        raise . jotShowDataLogLocal (f . context) =<< runT ma
+{-# inline jotShowDataLogLocal #-}

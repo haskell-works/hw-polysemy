@@ -27,10 +27,10 @@ interpretDataLogNoop =
 interpretDataLogLocalNoop :: forall a r. ()
   => (a -> a)
   -> InterpreterFor (DataLog a) r
-interpretDataLogLocalNoop _ =
+interpretDataLogLocalNoop context =
   interpretH \case
     Log.DataLog _ ->
       liftT (pure ())
     Log.Local f ma ->
-      raise . interpretDataLogLocalNoop f =<< runT ma
+      raise . interpretDataLogLocalNoop (f . context) =<< runT ma
 {-# inline interpretDataLogLocalNoop #-}
