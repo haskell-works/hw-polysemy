@@ -214,9 +214,12 @@ library amazonka
   import:               base, project-config,
                         amazonka,
                         binary,
+                        generic-lens,
                         hw-polysemy-core,
+                        lens,
                         polysemy-log,
                         resourcet,
+                        text,
                         stm,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Amazonka
