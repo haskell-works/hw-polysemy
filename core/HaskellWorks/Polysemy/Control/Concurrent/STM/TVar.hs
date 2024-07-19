@@ -15,26 +15,30 @@ module HaskellWorks.Polysemy.Control.Concurrent.STM.TVar
 import           Control.Concurrent.STM        (TVar)
 
 import qualified Control.Concurrent.STM        as STM
+import           Control.Monad.IO.Class        (MonadIO (..))
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 
 newTVarIO :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => a
   -> Sem r (TVar a)
 newTVarIO a = do
-  embed $ STM.newTVarIO a
+  embed $ liftIO $ STM.newTVarIO a
 
 readTVarIO :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => TVar a
   -> Sem r a
 readTVarIO tvar = do
-  embed $ STM.readTVarIO tvar
+  embed $ liftIO $ STM.readTVarIO tvar
 
 registerDelay :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => Int
   -> Sem r (TVar Bool)
 registerDelay n = do
-  embed $ STM.registerDelay n
+  embed $ liftIO $ STM.registerDelay n

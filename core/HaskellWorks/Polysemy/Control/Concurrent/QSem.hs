@@ -9,33 +9,38 @@ module HaskellWorks.Polysemy.Control.Concurrent.QSem
 
 import           Control.Concurrent.QSem       (QSem)
 import qualified Control.Concurrent.QSem       as IO
+import           Control.Monad.IO.Class        (MonadIO (..))
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 import           Polysemy.Resource
 
 newQSem :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => Int
   -> Sem r QSem
 newQSem n = do
-  embed $ IO.newQSem n
+  embed $ liftIO $ IO.newQSem n
 
 waitQSem :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => QSem
   -> Sem r ()
 waitQSem sem =
-  embed $ IO.waitQSem sem
+  embed $ liftIO $ IO.waitQSem sem
 
 signalQSem :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => QSem
   -> Sem r ()
 signalQSem sem =
-  embed $ IO.signalQSem sem
+  embed $ liftIO $ IO.signalQSem sem
 
 bracketQSem :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => Member Resource r
   => QSem
   -> Sem r a
