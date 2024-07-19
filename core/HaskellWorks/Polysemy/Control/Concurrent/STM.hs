@@ -10,12 +10,14 @@ module HaskellWorks.Polysemy.Control.Concurrent.STM
 
 import           Control.Concurrent.STM        (STM, TVar)
 import qualified Control.Concurrent.STM        as STM
+import           Control.Monad.IO.Class        (MonadIO (..))
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 
 atomically :: ()
-  => Member (Embed IO) r
+  => MonadIO m
+  => Member (Embed m) r
   => STM a
   -> Sem r a
 atomically m =
-  embed $ STM.atomically m
+  embed $ liftIO $ STM.atomically m
