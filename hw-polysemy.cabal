@@ -33,11 +33,11 @@ common exceptions                 { build-depends: exceptions                   
 common filepath                   { build-depends: filepath                                    < 1.6    }
 common generic-lens               { build-depends: generic-lens                                < 2.3    }
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.12   }
+common hedgehog                   { build-depends: hedgehog                                    < 1.6    }
 common http-conduit               { build-depends: http-conduit               >= 2.3        && < 2.4    }
-common hedgehog                   { build-depends: hedgehog                                    < 1.5    }
-common network                    { build-depends: network                                     < 3.3    }
 common lens                       { build-depends: lens                                        < 5.4    }
-common mtl                        { build-depends: mtl                                         < 5.4    }
+common mtl                        { build-depends: mtl                                         < 2.4    }
+common network                    { build-depends: network                                     < 3.3    }
 common polysemy                   { build-depends: polysemy                                    < 2      }
 common polysemy-log               { build-depends: polysemy-log               >= 0.11       && < 1      }
 common polysemy-plugin            { build-depends: polysemy-plugin                             < 0.5    }
@@ -50,8 +50,8 @@ common tasty                      { build-depends: tasty                        
 common tasty-discover             { build-depends: tasty-discover                              < 6      }
 common tasty-hedgehog             { build-depends: tasty-hedgehog                              < 1.5    }
 common temporary                  { build-depends: temporary                                   < 1.4    }
-common text                       { build-depends: text                                        < 3      }
 common testcontainers             { build-depends: testcontainers                              < 0.6    }
+common text                       { build-depends: text                                        < 3      }
 common time                       { build-depends: time                                        < 2      }
 common transformers               { build-depends: transformers                                < 0.7    }
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
