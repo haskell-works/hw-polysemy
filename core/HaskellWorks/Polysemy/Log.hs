@@ -11,11 +11,15 @@
 module HaskellWorks.Polysemy.Log
   ( interpretDataLogNoop,
     interpretDataLogLocalNoop,
+    interpretDataLogToJsonStdout,
     logEntryToJson,
     logMessageToJson,
   ) where
 
 import           Data.Aeson
+import qualified Data.Aeson                  as J
+import qualified Data.ByteString.Lazy        as LBS
+import qualified Data.Text.Encoding          as T
 import qualified GHC.Stack                   as GHC
 import           HaskellWorks.Prelude
 import           Polysemy
@@ -38,6 +42,14 @@ interpretDataLogLocalNoop context =
     Log.Local f ma ->
       raise . interpretDataLogLocalNoop (f . context) =<< runT ma
 {-# inline interpretDataLogLocalNoop #-}
+
+interpretDataLogToJsonStdout :: ()
+  => Member (Embed IO) r
+  => (e -> J.Value)
+  -> Sem (DataLog e : r) a
+  -> Sem r a
+interpretDataLogToJsonStdout toJson =
+  interpretDataLogStdoutWith (T.decodeUtf8 . LBS.toStrict . J.encode . toJson)
 
 logEntryToJson :: (a -> Value) -> LogEntry a -> Value
 logEntryToJson aToJson (LogEntry value time callstack) =
