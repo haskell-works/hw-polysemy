@@ -2,6 +2,8 @@
 {-# LANGUAGE GADTs            #-}
 {-# LANGUAGE TypeApplications #-}
 
+{- HLINT ignore "Use let" -}
+
 module HaskellWorks.Polysemy.Amazonka
   ( AwsLogEntry(..),
     runReaderAwsEnvDiscover,
@@ -26,6 +28,7 @@ import qualified Data.List                                         as L
 import qualified Data.Text.Lazy                                    as LT
 import qualified Data.Text.Lazy.Encoding                           as LT
 import           HaskellWorks.Polysemy.Control.Concurrent.STM.TVar
+import           HaskellWorks.Polysemy.System.Environment
 import           HaskellWorks.Prelude
 import           Polysemy
 import           Polysemy.Error
@@ -35,6 +38,9 @@ import qualified Polysemy.Log.Effect.DataLog                       as Log
 import           Polysemy.Reader
 import           Polysemy.Resource
 import qualified System.IO                                         as IO
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
+import Text.Read
 
 data AwsLogEntry = AwsLogEntry
   { logLevel :: AWS.LogLevel
@@ -42,14 +48,37 @@ data AwsLogEntry = AwsLogEntry
   }
   deriving (Generic, Show, Typeable)
 
+maybeSetEndpoint :: ()
+  => Maybe (String, String)
+  -> (AWS.Service -> AWS.Service)
+  -> AWS.Service
+  -> AWS.Service
+maybeSetEndpoint = \case
+  Just (host, portString) ->
+    case readMaybe portString of
+      Just port -> (. AWS.setEndpoint False (T.encodeUtf8 (T.pack host)) port)
+      Nothing -> id
+  Nothing           -> id
+
 runReaderAwsEnvDiscover :: ()
   => Member (Embed IO) r
   => Sem (Reader AWS.Env : r) a
   -> Sem r a
 runReaderAwsEnvDiscover f = do
   logger' <- embed $ AWS.newLogger AWS.Debug IO.stdout
+
+  mLocalStackHost <- lookupEnv "AWS_LOCALSTACK_HOST"
+  mLocalStackPort <- lookupEnv "AWS_LOCALSTACK_PORT"
+  mLocalStackEndpoint <- pure $ (,)
+    <$> mLocalStackHost
+    <*> mLocalStackPort
+
   discoveredAwsEnv <- embed $ AWS.newEnv AWS.discover
-  let awsEnv = discoveredAwsEnv { AWS.logger = logger' }
+
+  awsEnv <- pure $ discoveredAwsEnv
+    & the @"logger" .~ logger'
+    & the @"overrides" %~ maybeSetEndpoint mLocalStackEndpoint
+
   runReader awsEnv f
 
 sendAws :: ()
