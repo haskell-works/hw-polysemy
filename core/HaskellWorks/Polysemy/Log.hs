@@ -11,8 +11,16 @@
 module HaskellWorks.Polysemy.Log
   ( interpretDataLogNoop,
     interpretDataLogLocalNoop,
+    interpretDataLogToJsonStdout,
+    logEntryToJson,
+    logMessageToJson,
   ) where
 
+import           Data.Aeson
+import qualified Data.Aeson                  as J
+import qualified Data.ByteString.Lazy        as LBS
+import qualified Data.Text.Encoding          as T
+import qualified GHC.Stack                   as GHC
 import           HaskellWorks.Prelude
 import           Polysemy
 import           Polysemy.Internal.Tactics   (liftT)
@@ -34,3 +42,39 @@ interpretDataLogLocalNoop context =
     Log.Local f ma ->
       raise . interpretDataLogLocalNoop (f . context) =<< runT ma
 {-# inline interpretDataLogLocalNoop #-}
+
+interpretDataLogToJsonStdout :: ()
+  => Member (Embed IO) r
+  => (e -> J.Value)
+  -> Sem (DataLog e : r) a
+  -> Sem r a
+interpretDataLogToJsonStdout toJson =
+  interpretDataLogStdoutWith (T.decodeUtf8 . LBS.toStrict . J.encode . toJson)
+
+logEntryToJson :: (a -> Value) -> LogEntry a -> Value
+logEntryToJson aToJson (LogEntry value time callstack) =
+    object
+      [ "time" .= time
+      , "data" .= aToJson value
+      , "callstack" .= fmap callsiteToJson (GHC.getCallStack callstack)
+      ]
+    where
+      callsiteToJson :: ([Char], GHC.SrcLoc) -> Value
+      callsiteToJson (caller, srcLoc) =
+        object
+          [ "caller"    .= caller
+          , "package"   .= GHC.srcLocPackage srcLoc
+          , "module"    .= GHC.srcLocModule srcLoc
+          , "file"      .= GHC.srcLocFile srcLoc
+          , "startLine" .= GHC.srcLocStartLine srcLoc
+          , "startCol"  .= GHC.srcLocStartCol srcLoc
+          , "endLine"   .= GHC.srcLocEndLine srcLoc
+          , "endCol"    .= GHC.srcLocEndCol srcLoc
+          ]
+
+logMessageToJson :: LogMessage -> Value
+logMessageToJson (LogMessage severity message) =
+    object
+      [ "severity" .= show severity
+      , "message"  .= message
+      ]
