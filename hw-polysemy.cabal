@@ -125,7 +125,8 @@ library core
   if os(windows)
     exposed-modules:    HaskellWorks.IO.Win32.NamedPipe
 
-  exposed-modules:      HaskellWorks.Error
+  exposed-modules:      HaskellWorks.Control.Monad
+                        HaskellWorks.Error
                         HaskellWorks.Error.Types
                         HaskellWorks.IO.Network
                         HaskellWorks.IO.Network.NamedPipe
