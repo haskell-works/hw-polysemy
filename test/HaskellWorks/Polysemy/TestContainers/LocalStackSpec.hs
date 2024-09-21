@@ -26,7 +26,7 @@ import qualified TestContainers.Tasty                      as TC
 
 tasty_local_stack :: Tasty.TestTree
 tasty_local_stack =
-  TC.withContainers setupContainers $ \getContainer ->
+  TC.withContainers (setupContainers' "localstack/localstack-pro:3.7.2") $ \getContainer ->
     H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv getContainer $ do
       container <- embed getContainer
       ep <- getLocalStackEndpoint container
