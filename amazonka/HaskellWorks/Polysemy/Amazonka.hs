@@ -25,9 +25,13 @@ import           Data.Binary.Builder                               (Builder)
 import qualified Data.Binary.Builder                               as B
 import           Data.Generics.Product.Any
 import qualified Data.List                                         as L
+import qualified Data.Text                                         as T
+import qualified Data.Text.Encoding                                as T
 import qualified Data.Text.Lazy                                    as LT
 import qualified Data.Text.Lazy.Encoding                           as LT
+import qualified GHC.Stack                                         as GHC
 import           HaskellWorks.Polysemy.Control.Concurrent.STM.TVar
+import           HaskellWorks.Polysemy.Log
 import           HaskellWorks.Polysemy.System.Environment
 import           HaskellWorks.Prelude
 import           Polysemy
@@ -37,14 +41,14 @@ import           Polysemy.Log
 import qualified Polysemy.Log.Effect.DataLog                       as Log
 import           Polysemy.Reader
 import           Polysemy.Resource
+import           Polysemy.Time                                     (GhcTime)
 import qualified System.IO                                         as IO
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import Text.Read
+import           Text.Read
 
 data AwsLogEntry = AwsLogEntry
-  { logLevel :: AWS.LogLevel
-  , builder  :: Builder
+  { callStack :: CallStack
+  , logLevel  :: AWS.LogLevel
+  , builder   :: Builder
   }
   deriving (Generic, Show, Typeable)
 
@@ -57,7 +61,7 @@ maybeSetEndpoint = \case
   Just (host, portString) ->
     case readMaybe portString of
       Just port -> (. AWS.setEndpoint False (T.encodeUtf8 (T.pack host)) port)
-      Nothing -> id
+      Nothing   -> id
   Nothing           -> id
 
 runReaderAwsEnvDiscover :: ()
@@ -82,6 +86,7 @@ runReaderAwsEnvDiscover f = do
   runReader awsEnv f
 
 sendAws :: ()
+  => HasCallStack
   => AWS.AWSRequest a
   => Member (DataLog AwsLogEntry) r
   => Member (Embed m) r
@@ -93,12 +98,12 @@ sendAws :: ()
   => Typeable a
   => a
   -> Sem r (AWS.AWSResponse a)
-sendAws req = do
+sendAws req = GHC.withFrozenCallStack $ do
   tStack <- newTVarIO @[AwsLogEntry] []
   envAws0 <- ask @AWS.Env
 
   let logger ::  AWS.LogLevel -> Builder -> IO ()
-      logger ll b = STM.atomically $ STM.modifyTVar tStack (AwsLogEntry ll b:)
+      logger ll b = STM.atomically $ STM.modifyTVar tStack (AwsLogEntry GHC.callStack ll b:)
 
   let envAws1 = envAws0 { AWS.logger = logger }
 
@@ -108,12 +113,16 @@ sendAws req = do
             forM_ entries dataLog
 
 interpretDataLogAwsLogEntryToLog :: forall r. ()
+  => Member (DataLog (LogEntry LogMessage)) r
+  => Member GhcTime r
   => Member Log r
   => InterpreterFor (DataLog AwsLogEntry) r
 interpretDataLogAwsLogEntryToLog =
   interpretDataLogAwsLogEntryToLogWith awsLogLevelToSeverity
 
 interpretDataLogAwsLogEntryToLogWith :: forall r. ()
+  => Member (DataLog (LogEntry LogMessage)) r
+  => Member GhcTime r
   => Member Log r
   => (AWS.LogLevel -> Severity)
   -> InterpreterFor (DataLog AwsLogEntry) r
@@ -121,6 +130,8 @@ interpretDataLogAwsLogEntryToLogWith mapSeverity
   = interpretDataLogAwsLogEntryLocalToLogWith mapSeverity id
 
 interpretDataLogAwsLogEntryLocalToLogWith :: forall r. ()
+  => Member (DataLog (LogEntry LogMessage)) r
+  => Member GhcTime r
   => Member Log r
   => (AWS.LogLevel -> Severity)
   -> (AwsLogEntry -> AwsLogEntry)
@@ -128,9 +139,10 @@ interpretDataLogAwsLogEntryLocalToLogWith :: forall r. ()
 interpretDataLogAwsLogEntryLocalToLogWith mapSeverity context =
   interpretH \case
     Log.DataLog logEntry -> do
+      let cs = logEntry ^. the @"callStack"
       let severity = mapSeverity (logEntry ^. the @"logLevel")
       let text = LT.toStrict (LT.decodeUtf8 (B.toLazyByteString (logEntry ^. the @"builder")))
-      liftT (log severity text)
+      liftT (logCs cs severity text)
     Log.Local f ma ->
       raise . interpretDataLogAwsLogEntryLocalToLogWith mapSeverity (f . context) =<< runT ma
 {-# inline interpretDataLogAwsLogEntryLocalToLogWith #-}
