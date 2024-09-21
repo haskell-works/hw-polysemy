@@ -219,6 +219,7 @@ library amazonka
                         hw-polysemy-core,
                         lens,
                         polysemy-log,
+                        polysemy-time,
                         resourcet,
                         text,
                         stm,
