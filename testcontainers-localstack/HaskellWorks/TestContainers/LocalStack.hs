@@ -1,5 +1,6 @@
-{-# LANGUAGE GADTs             #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE OverloadedStrings  #-}
 
 {- HLINT ignore "Use camelCase" -}
 
@@ -14,7 +15,9 @@ module HaskellWorks.TestContainers.LocalStack
 import           Prelude
 
 import           Control.Concurrent                           (threadDelay)
+import qualified Control.Concurrent                           as IO
 import           Control.Exception                            (try)
+import qualified Control.Exception                            as E
 import           Control.Monad.IO.Class
 import qualified Data.ByteString.Lazy                         as LBS
 import           Data.Function
@@ -58,7 +61,7 @@ setupContainers' dockerTag = do
   -- Look up the corresponding port on the host machine for the exposed port 4566.
   let localStackPort = TC.containerPort localstackContainer 4566
 
-  liftIO $ waitForLocalStack "localhost" localStackPort 8
+  liftIO $ waitForLocalStack "localhost" localStackPort 100
 
   pure localstackContainer
 
@@ -71,12 +74,16 @@ waitForLocalStack host port timeout = do
     checkLoop startTime url = do
         result <- try $ simpleHttp url :: IO (Either HttpException LBS.ByteString)
         case result of
-            Right _ -> putStrLn "LocalStack is ready!"
-            Left _  -> do
+            Right _ -> do
+              putStrLn "LocalStack is ready!"
+              IO.threadDelay 100_000
+              putStrLn ""
+            Left e -> do
                 currentTime <- getPOSIXTime
                 let elapsedTime = currentTime - startTime
                 when (elapsedTime < fromIntegral timeout) $ do
-                    threadDelay 1000000  -- Wait for 1 second
+                    threadDelay 100_000
                     checkLoop startTime url
                 when (elapsedTime >= fromIntegral timeout) $ do
                     putStrLn "Timeout reached. LocalStack is not ready."
+                    E.throw e
