@@ -7,7 +7,7 @@ import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 import           Polysemy.Error
 
-onLeftThrow :: ()
+onLeftThrow :: forall e a r. ()
   => Member (Error e) r
   => Sem r (Either e a)
   -> Sem r a

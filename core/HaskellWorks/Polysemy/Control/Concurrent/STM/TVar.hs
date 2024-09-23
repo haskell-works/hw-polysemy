@@ -19,7 +19,7 @@ import           Control.Monad.IO.Class        (MonadIO (..))
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 
-newTVarIO :: forall a m r. ()
+newTVarIO :: forall a r m. ()
   => MonadIO m
   => Member (Embed m) r
   => a
@@ -27,7 +27,7 @@ newTVarIO :: forall a m r. ()
 newTVarIO a = do
   embed $ liftIO $ STM.newTVarIO a
 
-readTVarIO :: forall a m r. ()
+readTVarIO :: forall a r m. ()
   => MonadIO m
   => Member (Embed m) r
   => TVar a
@@ -35,7 +35,7 @@ readTVarIO :: forall a m r. ()
 readTVarIO tvar = do
   embed $ liftIO $ STM.readTVarIO tvar
 
-registerDelay :: ()
+registerDelay :: forall r m. ()
   => MonadIO m
   => Member (Embed m) r
   => Int

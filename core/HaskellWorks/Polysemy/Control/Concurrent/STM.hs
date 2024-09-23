@@ -14,7 +14,7 @@ import           Control.Monad.IO.Class        (MonadIO (..))
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 
-atomically :: forall a m r. ()
+atomically :: forall a r m. ()
   => MonadIO m
   => Member (Embed m) r
   => STM a

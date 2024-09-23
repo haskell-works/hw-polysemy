@@ -7,14 +7,22 @@ module HaskellWorks.Error
 
 import           HaskellWorks.Polysemy.Prelude
 
-onLeft :: forall e m a. Monad m => (e -> m a) -> Either e a -> m a
+onLeft :: forall e a m. ()
+  => Monad m
+  => (e -> m a) -> Either e a -> m a
 onLeft f = either f pure
 
-onNothing :: forall a m. Monad m => m a -> Maybe a -> m a
+onNothing :: forall a m. ()
+  => Monad m
+  => m a -> Maybe a -> m a
 onNothing h = maybe h return
 
-onLeftM :: forall e m a. Monad m => (e -> m a) -> m (Either e a) -> m a
+onLeftM :: forall e a m. ()
+  => Monad m
+  => (e -> m a) -> m (Either e a) -> m a
 onLeftM f action = onLeft f =<< action
 
-onNothingM :: forall a m. Monad m => m a -> m (Maybe a) -> m a
+onNothingM :: forall a m. ()
+  => Monad m
+  => m a -> m (Maybe a) -> m a
 onNothingM h f = onNothing h =<< f

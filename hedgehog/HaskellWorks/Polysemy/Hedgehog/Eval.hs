@@ -13,14 +13,14 @@ import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 import           Polysemy
 
-evalIO_ :: ()
+evalIO_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => IO a
   -> Sem r ()
 evalIO_ = void . evalIO
 
-evalM_ :: ()
+evalM_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Sem r a
