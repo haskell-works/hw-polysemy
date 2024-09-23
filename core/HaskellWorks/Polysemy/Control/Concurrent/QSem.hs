@@ -14,7 +14,7 @@ import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 import           Polysemy.Resource
 
-newQSem :: ()
+newQSem :: forall r m. ()
   => MonadIO m
   => Member (Embed m) r
   => Int
@@ -22,7 +22,7 @@ newQSem :: ()
 newQSem n = do
   embed $ liftIO $ IO.newQSem n
 
-waitQSem :: ()
+waitQSem :: forall r m. ()
   => MonadIO m
   => Member (Embed m) r
   => QSem
@@ -30,7 +30,7 @@ waitQSem :: ()
 waitQSem sem =
   embed $ liftIO $ IO.waitQSem sem
 
-signalQSem :: ()
+signalQSem :: forall r m. ()
   => MonadIO m
   => Member (Embed m) r
   => QSem
@@ -38,7 +38,7 @@ signalQSem :: ()
 signalQSem sem =
   embed $ liftIO $ IO.signalQSem sem
 
-bracketQSem :: ()
+bracketQSem :: forall a r m. ()
   => MonadIO m
   => Member (Embed m) r
   => Member Resource r

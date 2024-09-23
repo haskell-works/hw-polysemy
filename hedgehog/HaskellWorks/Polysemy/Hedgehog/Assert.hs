@@ -75,7 +75,7 @@ import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Log
 
-(===) :: ()
+(===) :: forall a r. ()
   => Member Hedgehog r
   => Eq a
   => Show a
@@ -86,7 +86,7 @@ import           Polysemy.Log
 (===) a b = withFrozenCallStack $ assertEquals a b
 
 -- | Fail when the result is Left.
-leftFail :: ()
+leftFail :: forall e a r. ()
   => Member Hedgehog r
   => Show e
   => HasCallStack
@@ -96,7 +96,7 @@ leftFail r = withFrozenCallStack $ case r of
   Right a -> pure a
   Left e  -> failMessage GHC.callStack ("Expected Right: " <> show e)
 
-nothingFail :: ()
+nothingFail :: forall a r. ()
   => Member Hedgehog r
   => HasCallStack
   => Maybe a
@@ -105,14 +105,14 @@ nothingFail r = withFrozenCallStack $ case r of
   Just a  -> return a
   Nothing -> failMessage GHC.callStack "Expected Just"
 
-failure :: ()
+failure :: forall a r. ()
   => Member Hedgehog r
   => HasCallStack
   => Sem r a
 failure =
   withFrozenCallStack $ failWith Nothing ""
 
-failMessage :: ()
+failMessage :: forall a r. ()
   => Member Hedgehog r
   => HasCallStack
   => GHC.CallStack
@@ -121,7 +121,7 @@ failMessage :: ()
 failMessage cs =
   withFrozenCallStack $ failWithCustom cs Nothing
 
-leftFailM :: forall e r a. ()
+leftFailM :: forall e a r. ()
   => Member Hedgehog r
   => Show e
   => HasCallStack
@@ -131,7 +131,7 @@ leftFailM f =
   withFrozenCallStack $ f >>= leftFail
 
 -- | Fail when the result is Left with the error message as JSON.
-leftFailJson :: ()
+leftFailJson :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -143,7 +143,7 @@ leftFailJson r = withFrozenCallStack $ case r of
     let msg = LT.unpack $ LT.decodeUtf8 $ J.encode e
     failMessage GHC.callStack ("Expected Right: " <> msg)
 
-leftFailJsonM :: forall e r a. ()
+leftFailJsonM :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -153,7 +153,7 @@ leftFailJsonM f =
   withFrozenCallStack $ f >>= leftFailJson
 
 -- | Fail when the result is Left with the error message as JSON.
-leftFailPretty :: ()
+leftFailPretty :: forall e a r. ()
   => Member Hedgehog r
   => Pretty e
   => HasCallStack
@@ -166,7 +166,7 @@ leftFailPretty r =
       let msg = PP.renderString $ PP.layoutPretty PP.defaultLayoutOptions $ PP.pretty e
       failMessage GHC.callStack ("Expected Right: " <> msg)
 
-leftFailPrettyM :: forall e r a. ()
+leftFailPrettyM :: forall e a r. ()
   => Member Hedgehog r
   => Pretty e
   => HasCallStack
@@ -176,7 +176,7 @@ leftFailPrettyM f =
   withFrozenCallStack $ f >>= leftFailPretty
 
 -- | Fail when the result is Left with the error message as JSON.
-leftFailJsonPretty :: ()
+leftFailJsonPretty :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -188,7 +188,7 @@ leftFailJsonPretty r = withFrozenCallStack $ case r of
     let msg = LT.unpack $ LT.decodeUtf8 $ J.encodePretty e
     failMessage GHC.callStack ("Expected Right: " <> msg)
 
-leftFailJsonPrettyM :: forall e r a. ()
+leftFailJsonPrettyM :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -198,7 +198,7 @@ leftFailJsonPrettyM f =
   withFrozenCallStack $ f >>= leftFailJsonPretty
 
 -- | Fail when the result is Left with the error message as JSON.
-leftFailYaml :: ()
+leftFailYaml :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -210,7 +210,7 @@ leftFailYaml r = withFrozenCallStack $ case r of
     let msg = T.unpack $ T.decodeUtf8 $ Y.encode e
     failMessage GHC.callStack ("Expected Right: " <> msg)
 
-leftFailYamlM :: forall e r a. ()
+leftFailYamlM :: forall e a r. ()
   => Member Hedgehog r
   => ToJSON e
   => HasCallStack
@@ -219,7 +219,7 @@ leftFailYamlM :: forall e r a. ()
 leftFailYamlM f =
   withFrozenCallStack $ f >>= leftFailYaml
 
-nothingFailM :: forall r a. ()
+nothingFailM :: forall a r. ()
   => Member Hedgehog r
   => HasCallStack
   => Sem r (Maybe a)
@@ -227,7 +227,7 @@ nothingFailM :: forall r a. ()
 nothingFailM f =
   withFrozenCallStack $ f >>= nothingFail
 
-catchFail :: forall e r a.()
+catchFail :: forall e a r. ()
   => Member Hedgehog r
   => HasCallStack
   => Show e
@@ -237,7 +237,7 @@ catchFail f =
   withFrozenCallStack $ f & runError & leftFailM
 {-# DEPRECATED catchFail "Use trapFail instead" #-}
 
-trapFail :: forall e r a.()
+trapFail :: forall e a r. ()
   => Member Hedgehog r
   => HasCallStack
   => Show e
@@ -249,7 +249,7 @@ trapFail f = do
     Right a -> pure a
     Left e  -> failMessage GHC.callStack $ show e
 
-trapFailJson :: forall e r a.()
+trapFailJson :: forall e a r. ()
   => Member Hedgehog r
   => HasCallStack
   => ToJSON e
@@ -263,7 +263,7 @@ trapFailJson f = do
       let msg = LT.unpack $ LT.decodeUtf8 $ J.encode e
       failMessage GHC.callStack msg
 
-trapFailJsonPretty :: forall e r a.()
+trapFailJsonPretty :: forall e a r. ()
   => Member Hedgehog r
   => HasCallStack
   => ToJSON e
@@ -277,7 +277,7 @@ trapFailJsonPretty f = do
       let msg = LT.unpack $ LT.decodeUtf8 $ J.encodePretty e
       failMessage GHC.callStack msg
 
-trapFailYaml :: forall e r a.()
+trapFailYaml :: forall e a r. ()
   => Member Hedgehog r
   => HasCallStack
   => ToJSON e
@@ -291,7 +291,7 @@ trapFailYaml f = do
       let msg = T.unpack $ T.decodeUtf8 $ Y.encode e
       failMessage GHC.callStack msg
 
-requireHead :: ()
+requireHead :: forall a r. ()
   => Member Hedgehog r
   => HasCallStack
   => [a]
@@ -301,7 +301,7 @@ requireHead = withFrozenCallStack $
     []    -> failMessage GHC.callStack "Cannot take head of empty list"
     (x:_) -> pure x
 
-assertPidOk :: ()
+assertPidOk :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -312,7 +312,7 @@ assertPidOk hProcess = withFrozenCallStack $
   nothingFailM $ getPid hProcess
 
 -- | Assert the 'filePath' can be parsed as JSON.
-assertIsJsonFile_ :: ()
+assertIsJsonFile_ :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -325,7 +325,7 @@ assertIsJsonFile_ fp = withFrozenCallStack $ do
     & trap @JsonDecodeError (\e -> failMessage GHC.callStack (e ^. the @"message"))
 
 -- | Assert the 'filePath' can be parsed as YAML.
-assertIsYamlFile :: ()
+assertIsYamlFile :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -339,7 +339,7 @@ assertIsYamlFile fp = withFrozenCallStack $ do
     & trap @YamlDecodeError (\e -> failMessage GHC.callStack (e ^. the @"message"))
 
 -- | Asserts that the given file exists.
-assertFileExists :: ()
+assertFileExists :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -352,7 +352,7 @@ assertFileExists file = withFrozenCallStack $ do
   unless exists $ failWithCustom GHC.callStack Nothing (file <> " has not been successfully created.")
 
 -- | Asserts that all of the given files exist.
-assertFilesExist :: ()
+assertFilesExist :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -363,7 +363,7 @@ assertFilesExist files =
   withFrozenCallStack $ for_ files assertFileExists
 
 -- | Asserts that the given file is missing.
-assertFileMissing :: ()
+assertFileMissing :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -376,7 +376,7 @@ assertFileMissing file = withFrozenCallStack $ do
   when exists $ failWithCustom GHC.callStack Nothing (file <> " should not have been created.")
 
 -- | Asserts that all of the given files are missing.
-assertFilesMissing :: ()
+assertFilesMissing :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -387,12 +387,15 @@ assertFilesMissing files =
   withFrozenCallStack $ for_ files assertFileMissing
 
 -- | Assert the file contains the given number of occurrences of the given string
-assertFileOccurences :: ()
+assertFileOccurences :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
   => Member Log r
-  => Int -> String -> FilePath -> Sem r ()
+  => Int
+  -> String
+  -> FilePath
+  -> Sem r ()
 assertFileOccurences n s fp = withFrozenCallStack $ do
   contents <- readFile fp
     & trap @IOException (failMessage GHC.callStack . show)
@@ -400,7 +403,7 @@ assertFileOccurences n s fp = withFrozenCallStack $ do
   L.length (L.filter (s `L.isInfixOf`) (L.lines contents)) === n
 
 -- | Assert the file contains the given number of occurrences of the given string
-assertFileLines :: ()
+assertFileLines :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -422,7 +425,7 @@ assertFileLines p fp = withFrozenCallStack $ do
     failWithCustom GHC.callStack Nothing (fp <> " has an unexpected number of lines")
 
 -- | Assert the file contains the given number of occurrences of the given string
-assertEndsWithSingleNewline :: ()
+assertEndsWithSingleNewline :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -439,7 +442,7 @@ assertEndsWithSingleNewline fp = withFrozenCallStack $ do
     _ -> failWithCustom GHC.callStack Nothing (fp <> " must end with newline.")
 
 -- | Asserts that the given directory exists.
-assertDirectoryExists :: ()
+assertDirectoryExists :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Embed IO) r
@@ -452,7 +455,7 @@ assertDirectoryExists dir = withFrozenCallStack $ do
   unless exists $ failWithCustom GHC.callStack Nothing ("Directory '" <> dir <> "' does not exist on the file system.")
 
 -- | Asserts that the given directory is missing.
-assertDirectoryMissing :: ()
+assertDirectoryMissing :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member Log r
@@ -464,7 +467,7 @@ assertDirectoryMissing dir = withFrozenCallStack $ do
     & trap @IOException (const (pure False))
   when exists $ failWithCustom GHC.callStack Nothing ("Directory '" <> dir <> "' does exist on the file system.")
 
-byDeadlineIO :: ()
+byDeadlineIO :: forall a r m. ()
   => HasCallStack
   => Member (Embed m) r
   => Member (Embed IO) r
@@ -480,7 +483,7 @@ byDeadlineIO period deadline errorMessage f = GHC.withFrozenCallStack $ byDeadli
 -- | Run the operation 'f' once a second until it returns 'True' or the deadline expires.
 --
 -- Expiration of the deadline results in an assertion failure
-byDeadlineM ::  ()
+byDeadlineM :: forall a r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member Log r
@@ -510,7 +513,7 @@ byDeadlineM period deadline errorMessage f = GHC.withFrozenCallStack $ do
 -- | Run the operation 'f' once a second until it returns 'True' or the duration expires.
 --
 -- Expiration of the duration results in an assertion failure
-byDurationIO :: ()
+byDurationIO :: forall b r m . ()
   => HasCallStack
   => Member (Embed m) r
   => Member (Embed IO) r
@@ -527,7 +530,7 @@ byDurationIO period duration errorMessage f =
 -- | Run the operation 'f' once a second until it returns 'True' or the duration expires.
 --
 -- Expiration of the duration results in an assertion failure
-byDurationM :: ()
+byDurationM :: forall b r. ()
   => HasCallStack
   => Member (Embed IO) r
   => Member Hedgehog r

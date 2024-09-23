@@ -45,7 +45,7 @@ makeSem ''Except
 -- /Beware/: Effects that aren't interpreted in terms of 'IO'
 -- will have local state semantics in regards to 'Except' effects
 -- interpreted this way. See 'Final'.
-catchExToFinal :: forall m r a.()
+catchExToFinal :: forall a r m. ()
   => X.MonadCatch m
   => X.MonadThrow m
   => Member (Final m) r
@@ -63,7 +63,7 @@ catchExToFinal = interpretFinal $ \case
 
 ------------------------------------------------------------------------------
 -- | Run a 'Except' effect in terms of 'X.catch' and 'X.throwM' through final IO monad.
-catchExToFinalIO :: forall r a.()
+catchExToFinalIO :: forall a r. ()
   => Member (Final IO) r
   => Sem (Except ': r) a
   -> Sem r a

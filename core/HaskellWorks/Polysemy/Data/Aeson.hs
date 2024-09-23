@@ -15,7 +15,7 @@ newtype AesonDecodeError
   = AesonDecodeError String
   deriving (Show)
 
-aesonDecode :: ()
+aesonDecode :: forall a r. ()
   => Member (Error AesonDecodeError) r
   => FromJSON a
   => LBS.ByteString

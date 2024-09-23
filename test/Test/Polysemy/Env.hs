@@ -38,7 +38,7 @@ newtype EnvironmentVariableMissing =
   EnvironmentVariableMissing String
   deriving (Show, Eq)
 
-runTestEnv :: ()
+runTestEnv :: forall a r. ()
   => HasCallStack
   => Member (Embed IO) r
   => Member Hedgehog r
@@ -51,7 +51,7 @@ runTestEnv f =
   withFrozenCallStack $ f
     & runReaderAwsEnvDiscover
 
-runLocalTestEnv :: ()
+runLocalTestEnv :: forall a r. ()
   => HasCallStack
   => Member (Embed IO) r
   => Member Hedgehog r
@@ -65,12 +65,12 @@ runLocalTestEnv mk f =
   withFrozenCallStack $ f
     & runReaderLocalAwsEnvDiscover mk
 
-runReaderFromEnvOrFail :: forall i r a. ()
+runReaderFromEnvOrFail :: forall b a r. ()
   => Member (Embed IO) r
   => Member Hedgehog r
-  => (String -> i)
+  => (String -> b)
   -> String
-  -> Sem (Reader i ': r) a
+  -> Sem (Reader b ': r) a
   -> Sem r a
 runReaderFromEnvOrFail f envVar action = do
   env <- lookupEnv envVar

@@ -64,7 +64,7 @@ maybeSetEndpoint = \case
       Nothing   -> id
   Nothing           -> id
 
-runReaderAwsEnvDiscover :: ()
+runReaderAwsEnvDiscover :: forall a r. ()
   => Member (Embed IO) r
   => Sem (Reader AWS.Env : r) a
   -> Sem r a
@@ -85,7 +85,7 @@ runReaderAwsEnvDiscover f = do
 
   runReader awsEnv f
 
-sendAws :: ()
+sendAws :: forall a r m. ()
   => HasCallStack
   => AWS.AWSRequest a
   => Member (DataLog AwsLogEntry) r

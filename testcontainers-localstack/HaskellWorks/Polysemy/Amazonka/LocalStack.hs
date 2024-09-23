@@ -20,7 +20,7 @@ import qualified System.IO                                    as IO
 import qualified TestContainers.Monad                         as TC
 import qualified TestContainers.Tasty                         as TC
 
-runReaderLocalAwsEnvDiscover :: ()
+runReaderLocalAwsEnvDiscover :: forall a r. ()
   => Member (Embed IO) r
   => IO TC.Container
   -> Sem (Reader AWS.Env : r) a

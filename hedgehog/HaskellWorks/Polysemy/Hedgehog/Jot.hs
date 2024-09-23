@@ -74,7 +74,7 @@ import           Polysemy.Internal.Tactics                      (liftT)
 import qualified Polysemy.Log.Effect.DataLog                    as Log
 
 -- | Annotate the given string at the context supplied by the callstack.
-jotWithCallstack :: ()
+jotWithCallstack :: forall r. ()
   => Member Hedgehog r
   => GHC.CallStack
   -> String
@@ -83,7 +83,7 @@ jotWithCallstack cs a =
   writeLog $ H.Annotation (H.getCaller cs) a
 
 -- | Annotate with the given string.
-jot :: ()
+jot :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => String
@@ -94,16 +94,16 @@ jot a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given string returning unit.
-jot_ :: ()
+jot_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
-  => ToString s
-  => s
+  => ToString a
+  => a
   -> Sem r ()
 jot_ a = GHC.withFrozenCallStack $ jotWithCallstack GHC.callStack $ toString a
 
 -- | Annotate the given text returning unit.
-jotText_ :: ()
+jotText_ :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Text
@@ -111,18 +111,18 @@ jotText_ :: ()
 jotText_ a = GHC.withFrozenCallStack $ jotWithCallstack GHC.callStack $ Text.unpack a
 
 -- | Annotate the given string in a monadic context.
-jotM :: ()
-  => ToString s
+jotM :: forall a r. ()
+  => ToString a
   => Member Hedgehog r
   => GHC.HasCallStack
-  => Sem r s
-  -> Sem r s
+  => Sem r a
+  -> Sem r a
 jotM a = GHC.withFrozenCallStack $ do
   !b <- evalM a
   jotWithCallstack GHC.callStack $ toString b
   return b
 
-jotBsUtf8M :: ()
+jotBsUtf8M :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Sem r ByteString
@@ -132,7 +132,7 @@ jotBsUtf8M a = GHC.withFrozenCallStack $ do
   jotWithCallstack GHC.callStack $ Text.unpack $ Text.decodeUtf8 b
   return b
 
-jotLbsUtf8M :: ()
+jotLbsUtf8M :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Sem r LBS.ByteString
@@ -143,7 +143,7 @@ jotLbsUtf8M a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given string in a monadic context returning unit.
-jotM_ :: ()
+jotM_ :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Sem r String
@@ -154,7 +154,7 @@ jotM_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given string in IO.
-jotIO :: ()
+jotIO :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => IO String
@@ -165,7 +165,7 @@ jotIO f = GHC.withFrozenCallStack $ do
   return a
 
 -- | Annotate the given string in IO returning unit.
-jotIO_ :: ()
+jotIO_ :: forall r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => IO String
@@ -176,7 +176,7 @@ jotIO_ f = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value.
-jotShow :: ()
+jotShow :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -188,7 +188,7 @@ jotShow a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value returning unit.
-jotShow_ :: ()
+jotShow_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -197,7 +197,7 @@ jotShow_ :: ()
 jotShow_ a = GHC.withFrozenCallStack $ jotWithCallstack GHC.callStack (show a)
 
 -- | Annotate the given value in a monadic context.
-jotShowM :: ()
+jotShowM :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -209,7 +209,7 @@ jotShowM a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value in a monadic context returning unit.
-jotShowM_ :: ()
+jotShowM_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -221,7 +221,7 @@ jotShowM_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value in IO.
-jotShowIO :: ()
+jotShowIO :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -233,7 +233,7 @@ jotShowIO f = GHC.withFrozenCallStack $ do
   return a
 
 -- | Annotate the given value in IO returning unit.
-jotShowIO_ :: ()
+jotShowIO_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -245,7 +245,7 @@ jotShowIO_ f = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON.
-jotJson :: ()
+jotJson :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -257,7 +257,7 @@ jotJson a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON.
-jotJson_ :: ()
+jotJson_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -269,7 +269,7 @@ jotJson_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON in a monadic context.
-jotJsonM :: ()
+jotJsonM :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -281,7 +281,7 @@ jotJsonM a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON in a monadic context.
-jotJsonM_ :: ()
+jotJsonM_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -293,7 +293,7 @@ jotJsonM_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON.
-jotJsonPretty :: ()
+jotJsonPretty :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -305,7 +305,7 @@ jotJsonPretty a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON.
-jotJsonPretty_ :: ()
+jotJsonPretty_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -317,7 +317,7 @@ jotJsonPretty_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON in a monadic context.
-jotJsonPrettyM :: ()
+jotJsonPrettyM :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -329,7 +329,7 @@ jotJsonPrettyM a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON in a monadic context.
-jotJsonPrettyM_ :: ()
+jotJsonPrettyM_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -341,7 +341,7 @@ jotJsonPrettyM_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON.
-jotYaml :: ()
+jotYaml :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -353,7 +353,7 @@ jotYaml a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON.
-jotYaml_ :: ()
+jotYaml_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -365,7 +365,7 @@ jotYaml_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the given value as JSON in a monadic context.
-jotYamlM :: ()
+jotYamlM :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -377,7 +377,7 @@ jotYamlM a = GHC.withFrozenCallStack $ do
   return b
 
 -- | Annotate the given value as JSON in a monadic context.
-jotYamlM_ :: ()
+jotYamlM_ :: forall a r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => ToJSON a
@@ -389,7 +389,7 @@ jotYamlM_ a = GHC.withFrozenCallStack $ do
   return ()
 
 -- | Annotate the each value in the given traversable.
-jotEach :: ()
+jotEach :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -401,7 +401,7 @@ jotEach as = GHC.withFrozenCallStack $ do
   return as
 
 -- | Annotate the each value in the given traversable returning unit.
-jotEach_ :: ()
+jotEach_ :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -411,7 +411,7 @@ jotEach_ :: ()
 jotEach_ as = GHC.withFrozenCallStack $ for_ as $ jotWithCallstack GHC.callStack . show
 
 -- | Annotate the each value in the given traversable in a monadic context.
-jotEachM :: ()
+jotEachM :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -424,7 +424,7 @@ jotEachM f = GHC.withFrozenCallStack $ do
   return as
 
 -- | Annotate the each value in the given traversable in a monadic context returning unit.
-jotEachM_ :: ()
+jotEachM_ :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -436,7 +436,7 @@ jotEachM_ f = GHC.withFrozenCallStack $ do
   for_ as $ jotWithCallstack GHC.callStack . show
 
 -- | Annotate the each value in the given traversable in IO.
-jotEachIO :: ()
+jotEachIO :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -449,7 +449,7 @@ jotEachIO f = GHC.withFrozenCallStack $ do
   return as
 
 -- | Annotate the each value in the given traversable in IO returning unit.
-jotEachIO_ :: ()
+jotEachIO_ :: forall a f r. ()
   => Member Hedgehog r
   => GHC.HasCallStack
   => Show a
@@ -461,7 +461,7 @@ jotEachIO_ f = GHC.withFrozenCallStack $ do
   for_ as $ jotWithCallstack GHC.callStack . show
 
 -- | Return the input file path after annotating it relative to the package directory
-jotPkgInputFile :: ()
+jotPkgInputFile :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Reader PackagePath) r
@@ -473,7 +473,7 @@ jotPkgInputFile fp = withFrozenCallStack $ do
   return fp
 
 -- | Return the golden file path after annotating it relative to the package directory
-jotPkgGoldenFile :: ()
+jotPkgGoldenFile :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Reader PackagePath) r
@@ -484,7 +484,7 @@ jotPkgGoldenFile fp = withFrozenCallStack $ do
   jot_ $ pkgPath <> "/" <> fp
   return fp
 
-jotRootInputFile :: ()
+jotRootInputFile :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Reader ProjectRoot) r
@@ -495,7 +495,7 @@ jotRootInputFile fp = withFrozenCallStack $ do
   jot $ pkgPath <> "/" <> fp
 
 -- | Return the test file path after annotating it relative to the project root directory
-jotTempFile :: ()
+jotTempFile :: forall r. ()
   => HasCallStack
   => Member Hedgehog r
   => Member (Reader Workspace) r

@@ -79,14 +79,14 @@ data Hedgehog m rv where
 
 makeSem ''Hedgehog
 
-trapAssertion :: ()
+trapAssertion :: forall a r. ()
   => Member Hedgehog r
   => (H.Failure -> Sem r a)
   -> Sem r a
   -> Sem r a
 trapAssertion = flip catchAssertion
 
-hedgehogToMonadTestFinal :: ()
+hedgehogToMonadTestFinal :: forall a r m. ()
   => IO.MonadIO m
   => IO.MonadCatch m
   => H.MonadTest m
@@ -120,19 +120,19 @@ hedgehogToMonadTestFinal = interpretFinal \case
   WriteLog logValue ->
     liftS $ H.writeLog logValue
 
-hedgehogToPropertyFinal :: ()
+hedgehogToPropertyFinal :: forall a r. ()
   => Member (Final (H.PropertyT IO)) r
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToPropertyFinal = hedgehogToMonadTestFinal
 
-hedgehogToTestFinal :: ()
+hedgehogToTestFinal :: forall a r. ()
   => Member (Final (H.TestT IO)) r
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToTestFinal = hedgehogToMonadTestFinal
 
-catchExToPropertyFinal :: ()
+catchExToPropertyFinal :: forall a r. ()
   => Member (Final (H.PropertyT IO)) r
   => Sem (Except ': r) a
   -> Sem r a

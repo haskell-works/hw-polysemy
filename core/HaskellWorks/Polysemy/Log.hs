@@ -49,7 +49,7 @@ interpretDataLogLocalNoop context =
       raise . interpretDataLogLocalNoop (f . context) =<< runT ma
 {-# inline interpretDataLogLocalNoop #-}
 
-interpretDataLogToJsonStdout :: ()
+interpretDataLogToJsonStdout :: forall e a r. ()
   => Member (Embed IO) r
   => (e -> J.Value)
   -> Sem (DataLog e : r) a
@@ -58,7 +58,7 @@ interpretDataLogToJsonStdout toJson =
   interpretDataLogStdoutWith (T.decodeUtf8 . LBS.toStrict . J.encode . toJson)
 
 -- | Log a datalog message with the given severity and provided callstack.
-annotateCs :: ()
+annotateCs :: forall a r. ()
   => Member GhcTime r
   => CallStack
   -> a
@@ -79,7 +79,10 @@ logCs cs severity message =
     send . DataLog =<< annotateCs cs (LogMessage severity message)
 {-# inline logCs #-}
 
-logEntryToJson :: (a -> Value) -> LogEntry a -> Value
+logEntryToJson :: forall a. ()
+  => (a -> Value)
+  -> LogEntry a
+  -> Value
 logEntryToJson aToJson (LogEntry value time callstack) =
     object
       [ "time" .= time
