@@ -13,6 +13,7 @@ import qualified Hedgehog                                       as H
 import           Control.Monad.IO.Class                         (liftIO)
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
 import           HaskellWorks.Polysemy.Hedgehog.Effect.Log
+import           HaskellWorks.Polysemy.Log
 import           Polysemy
 import           Polysemy.Embed
 import           Polysemy.Log
@@ -34,7 +35,7 @@ propertyOnce :: ()
   -> H.Property
 propertyOnce f =
     f & interpretLogDataLog
-      & setLogLevel (Just Info)
+      & setLogLevelFromEnv "LOG_LEVEL" Info
       & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
       & interpretDataLogHedgehog id (const GHC.callStack)
       & interpretTimeGhc
