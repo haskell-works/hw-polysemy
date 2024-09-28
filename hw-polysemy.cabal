@@ -118,6 +118,7 @@ library core
                         text,
                         temporary,
                         time,
+                        ulid,
                         unliftio,
                         Win32,
                         yaml,
@@ -149,6 +150,7 @@ library core
                         HaskellWorks.Polysemy.Data.Text
                         HaskellWorks.Polysemy.Data.Text.Lazy
                         HaskellWorks.Polysemy.Data.Text.Strict
+                        HaskellWorks.Polysemy.Data.ULID
                         HaskellWorks.Polysemy.Error
                         HaskellWorks.Polysemy.Error.Types
                         HaskellWorks.Polysemy.Except
