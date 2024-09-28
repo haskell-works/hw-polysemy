@@ -54,6 +54,7 @@ common testcontainers             { build-depends: testcontainers               
 common text                       { build-depends: text                                        < 3      }
 common time                       { build-depends: time                                        < 2      }
 common transformers               { build-depends: transformers                                < 0.7    }
+common ulid                       { build-depends: ulid                                        < 0.4    }
 common unliftio                   { build-depends: unliftio                                    < 0.3    }
 common yaml                       { build-depends: yaml                                        < 0.12   }
 
@@ -172,6 +173,7 @@ library hedgehog
                         aeson,
                         aeson-pretty,
                         async,
+                        binary,
                         bytestring,
                         contravariant,
                         Diff,
@@ -192,6 +194,7 @@ library hedgehog
                         text,
                         time,
                         transformers,
+                        ulid,
                         yaml,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Hedgehog
@@ -206,6 +209,8 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
                         HaskellWorks.Polysemy.Hedgehog.Test
+                        HaskellWorks.Polysemy.Hedgehog.Time
+                        HaskellWorks.Polysemy.Hedgehog.Ulid
                         HaskellWorks.Polysemy.Hedgehog.Workspace
                         HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   hs-source-dirs:       hedgehog
