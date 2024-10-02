@@ -4,13 +4,13 @@
 
 {- HLINT ignore "Use camelCase" -}
 
-module HaskellWorks.TestContainers.LocalStack
-  ( LocalStackEndpoint(..)
-  , TC.Container
-  , setupContainers
-  , setupContainers'
-  , waitForLocalStack
-  ) where
+module HaskellWorks.TestContainers.LocalStack (
+    LocalStackEndpoint (..),
+    TC.Container,
+    setupContainers,
+    setupContainers',
+    waitForLocalStack,
+) where
 
 import           Prelude
 
@@ -23,47 +23,52 @@ import qualified Data.ByteString.Lazy                         as LBS
 import           Data.Function
 import qualified Data.Text                                    as T
 import           Data.Time.Clock.POSIX                        (getPOSIXTime)
-import           HaskellWorks.Prelude
-import           HaskellWorks.TestContainers.LocalStack.Types (LocalStackEndpoint (LocalStackEndpoint))
 import           Network.HTTP.Conduit                         (HttpException,
                                                                simpleHttp)
 import qualified System.Environment                           as IO
+
+import           HaskellWorks.Prelude
+import           HaskellWorks.TestContainers.LocalStack.Types (LocalStackEndpoint (LocalStackEndpoint))
 import qualified TestContainers.Monad                         as TC
 import qualified TestContainers.Tasty                         as TC
 
 -- | Sets up and runs the containers required for this test suite.
-setupContainers :: ()
-  => TC.MonadDocker m
-  => m TC.Container
+setupContainers ::
+    () =>
+    (TC.MonadDocker m) =>
+    m TC.Container
 setupContainers = setupContainers' "localstack/localstack-pro:latest"
 
 -- | Sets up and runs the containers required for this test suite.
-setupContainers' :: ()
-  => TC.MonadDocker m
-  => Text
-  -> m TC.Container
+setupContainers' ::
+    () =>
+    (TC.MonadDocker m) =>
+    Text ->
+    m TC.Container
 setupContainers' dockerTag = do
-  authToken <- liftIO $ IO.lookupEnv "LOCALSTACK_AUTH_TOKEN"
-  -- Launch the container based on the postgres image.
-  localstackContainer <- TC.run $ TC.containerRequest (TC.fromTag dockerTag)
-    & TC.setEnv [("LOCALSTACK_AUTH_TOKEN", maybe "" T.pack authToken)]
-    -- Expose the port 4566 from within the container. The respective port
-    -- on the host machine can be looked up using `containerPort` (see below).
-    & TC.setExpose
-        ( mconcat
-            [ [ 4566 ]
-            ]
-        )
-    -- Wait until the container is ready to accept requests. `run` blocks until
-    -- readiness can be established.
-    & TC.setWaitingFor (TC.waitUntilMappedPortReachable 4566)
+    authToken <- liftIO $ IO.lookupEnv "LOCALSTACK_AUTH_TOKEN"
+    -- Launch the container based on the postgres image.
+    localstackContainer <-
+        TC.run $
+            TC.containerRequest (TC.fromTag dockerTag)
+                & TC.setEnv [("LOCALSTACK_AUTH_TOKEN", maybe "" T.pack authToken)]
+                -- Expose the port 4566 from within the container. The respective port
+                -- on the host machine can be looked up using `containerPort` (see below).
+                & TC.setExpose
+                    ( mconcat
+                        [ [4566]
+                        ]
+                    )
+                -- Wait until the container is ready to accept requests. `run` blocks until
+                -- readiness can be established.
+                & TC.setWaitingFor (TC.waitUntilMappedPortReachable 4566)
 
-  -- Look up the corresponding port on the host machine for the exposed port 4566.
-  let localStackPort = TC.containerPort localstackContainer 4566
+    -- Look up the corresponding port on the host machine for the exposed port 4566.
+    let localStackPort = TC.containerPort localstackContainer 4566
 
-  liftIO $ waitForLocalStack "localhost" localStackPort 100
+    liftIO $ waitForLocalStack "localhost" localStackPort 100
 
-  pure localstackContainer
+    pure localstackContainer
 
 waitForLocalStack :: String -> Int -> Int -> IO ()
 waitForLocalStack host port timeout = do
@@ -75,14 +80,13 @@ waitForLocalStack host port timeout = do
         result <- try $ simpleHttp url :: IO (Either HttpException LBS.ByteString)
         case result of
             Right _ -> do
-              putStrLn "LocalStack is ready!"
-              IO.threadDelay 100_000
-              putStrLn ""
+                IO.threadDelay 1_000_000
+                putStrLn ""
             Left e -> do
                 currentTime <- getPOSIXTime
                 let elapsedTime = currentTime - startTime
                 when (elapsedTime < fromIntegral timeout) $ do
-                    threadDelay 100_000
+                    threadDelay 500_000
                     checkLoop startTime url
                 when (elapsedTime >= fromIntegral timeout) $ do
                     putStrLn "Timeout reached. LocalStack is not ready."
