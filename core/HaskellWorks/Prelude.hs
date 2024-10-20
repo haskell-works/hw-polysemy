@@ -108,9 +108,20 @@ module HaskellWorks.Prelude
 
     for_,
 
+    zip,
+    zip3,
+    zipWith,
+    zipWith3,
+    unzip,
+    unzip3,
+
     Fractional(..),
+    Floating(..),
+    Integral(..),
+    Read(..),
     Real(..),
     RealFrac(..),
+    RealFloat(..),
     Ratio(..),
     Rational,
     fromIntegral,
@@ -152,6 +163,7 @@ module HaskellWorks.Prelude
     Generic,
 
     IOException,
+    IOError,
     SomeException(..),
   ) where
 
@@ -160,7 +172,7 @@ import           Control.Exception
 import           Control.Monad
 import           Data.Bifunctor
 import           Data.Bool
-import           Data.ByteString
+import           Data.ByteString                      (ByteString)
 import           Data.Char
 import           Data.Either
 import           Data.Eq
@@ -174,7 +186,7 @@ import           Data.Monoid
 import           Data.Ord
 import           Data.Semigroup
 import           Data.String
-import           Data.Text
+import           Data.Text                            (Text)
 import           Data.Traversable
 import           Data.Tuple
 import           Data.Void
@@ -184,8 +196,8 @@ import           GHC.Generics
 import           GHC.Num
 import           GHC.Real
 import           GHC.Stack
+import           Prelude
 import           System.FilePath
-import           Text.Show
 
 import qualified Data.Text                            as T
 
