@@ -3,8 +3,8 @@
 {-# LANGUAGE TypeApplications #-}
 
 module HaskellWorks.Polysemy.HedgehogSpec
-  ( hprop_example_property
-  , hprop_example_test
+  ( hprop_example_property,
+    hprop_example_test,
   ) where
 
 import           HaskellWorks.Polysemy.Prelude

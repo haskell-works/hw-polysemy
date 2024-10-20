@@ -4,7 +4,7 @@
 {- HLINT ignore "Use let" -}
 
 module HaskellWorks.Polysemy.TestContainers.LocalStackSpec
-  ( tasty_local_stack
+  ( tasty_local_stack,
   ) where
 
 import           Prelude

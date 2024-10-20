@@ -1,6 +1,6 @@
 module HaskellWorks.Polysemy.Hedgehog.Test
-  ( Property
-  , test
+  ( Property,
+    test,
 
   ) where
 

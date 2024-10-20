@@ -2,8 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module HaskellWorks.Polysemy.Cabal.Types
-  ( Plan(..)
-  , Component(..)
+  ( Plan(..),
+    Component(..),
   ) where
 
 import           Control.Applicative

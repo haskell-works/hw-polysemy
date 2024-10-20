@@ -1,9 +1,9 @@
 {- HLINT ignore "Use let" -}
 
 module HaskellWorks.Polysemy.Amazonka.LocalStack
-  ( runReaderLocalAwsEnvDiscover
-  , getLocalStackEndpoint
-  , inspectContainer
+  ( runReaderLocalAwsEnvDiscover,
+    getLocalStackEndpoint,
+    inspectContainer,
   ) where
 
 import qualified Amazonka                                     as AWS

@@ -1,6 +1,6 @@
 module HaskellWorks.Polysemy.FilePath
-  ( exeSuffix
-  , addExeSuffix
+  ( exeSuffix,
+    addExeSuffix,
   ) where
 
 import qualified HaskellWorks.Polysemy.OS      as OS

@@ -1,20 +1,20 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal
-  ( MonadAssertion(..)
-  , failWithCustom
+  ( MonadAssertion(..),
+    failWithCustom,
   ) where
 
 import           HaskellWorks.Polysemy.Prelude
-import qualified Hedgehog                      as H
-import qualified Hedgehog.Internal.Property    as H
-import qualified Hedgehog.Internal.Source      as H
+import qualified Hedgehog                              as H
+import qualified Hedgehog.Internal.Property            as H
+import qualified Hedgehog.Internal.Source              as H
 
-import qualified Control.Monad.Trans.Except as E
-import qualified Control.Monad.Trans.Resource as IO
-import qualified Control.Monad.Trans.Resource.Internal as IO
 import           Control.Monad.Trans.Class
+import qualified Control.Monad.Trans.Except            as E
+import qualified Control.Monad.Trans.Resource          as IO
+import qualified Control.Monad.Trans.Resource.Internal as IO
 
 failWithCustom :: ()
   => H.MonadTest m

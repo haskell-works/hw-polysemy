@@ -1,7 +1,7 @@
 module HaskellWorks.Polysemy.Cabal
-  ( findDefaultPlanJsonFile
-  , getPlanJsonFile
-  , binDist
+  ( findDefaultPlanJsonFile,
+    getPlanJsonFile,
+    binDist,
   ) where
 
 import           HaskellWorks.Polysemy.Cabal.Types

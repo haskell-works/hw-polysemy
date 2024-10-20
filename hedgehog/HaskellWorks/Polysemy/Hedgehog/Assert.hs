@@ -69,11 +69,13 @@ import           Prettyprinter                                  (Pretty)
 import qualified Prettyprinter                                  as PP
 import qualified Prettyprinter.Render.String                    as PP
 
+import           Control.Monad.IO.Class                         (MonadIO (..))
 import           HaskellWorks.Polysemy.System.IO                as IO
 import           HaskellWorks.Polysemy.System.Process
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Log
+import qualified System.IO                                      as IOIO
 
 (===) :: forall a r. ()
   => Member Hedgehog r
@@ -277,7 +279,9 @@ trapFailJsonPretty f = do
       let msg = LT.unpack $ LT.decodeUtf8 $ J.encodePretty e
       failMessage GHC.callStack msg
 
-trapFailYaml :: forall e a r. ()
+trapFailYaml :: forall e a r m. ()
+  => MonadIO m
+  => Member (Embed m) r
   => Member Hedgehog r
   => HasCallStack
   => ToJSON e
@@ -289,6 +293,7 @@ trapFailYaml f = do
     Right a -> pure a
     Left e  -> do
       let msg = T.unpack $ T.decodeUtf8 $ Y.encode e
+      embed $ liftIO $ IOIO.putStrLn msg
       failMessage GHC.callStack msg
 
 requireHead :: forall a r. ()

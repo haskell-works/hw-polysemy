@@ -1,9 +1,9 @@
 module HaskellWorks.Polysemy.Hedgehog.Eval
-  ( evalIO_
-  , evalM_
-  , eval
-  , evalM
-  , evalIO
+  ( evalIO_,
+    evalM_,
+    eval,
+    evalM,
+    evalIO,
 
   ) where
 
