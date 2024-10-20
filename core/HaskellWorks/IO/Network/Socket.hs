@@ -2,11 +2,11 @@
 {-# LANGUAGE TypeApplications    #-}
 
 module HaskellWorks.IO.Network.Socket
-  ( doesSocketExist
-  , isPortOpen
-  , canConnect
-  , listenOn
-  , allocateRandomPorts
+  ( doesSocketExist,
+    isPortOpen,
+    canConnect,
+    listenOn,
+    allocateRandomPorts,
   ) where
 
 import           Control.Exception  (IOException, handle)

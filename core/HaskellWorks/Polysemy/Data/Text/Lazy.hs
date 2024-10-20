@@ -1,140 +1,140 @@
 module HaskellWorks.Polysemy.Data.Text.Lazy
-  ( LT.Text
+  ( LT.Text,
 
-  -- * Creation and elimination
-  , LT.pack
-  , LT.unpack
-  , LT.singleton
-  , LT.empty
+    -- * Creation and elimination
+    LT.pack,
+    LT.unpack,
+    LT.singleton,
+    LT.empty,
 
-  -- * Basic interface
-  , LT.length
-  , LT.compareLength
+    -- * Basic interface
+    LT.length,
+    LT.compareLength,
 
-  -- * Transformations
-  , LT.map
-  , LT.intercalate
-  , LT.intersperse
-  , LT.transpose
-  , LT.reverse
-  , LT.replace
+    -- * Transformations
+    LT.map,
+    LT.intercalate,
+    LT.intersperse,
+    LT.transpose,
+    LT.reverse,
+    LT.replace,
 
-  -- ** Case conversion
-  -- $case
-  , LT.toCaseFold
-  , LT.toLower
-  , LT.toUpper
-  , LT.toTitle
+    -- ** Case conversion
+    -- $case
+    LT.toCaseFold,
+    LT.toLower,
+    LT.toUpper,
+    LT.toTitle,
 
-  -- ** Justification
-  , LT.justifyLeft
-  , LT.justifyRight
-  , LT.center
+    -- ** Justification
+    LT.justifyLeft,
+    LT.justifyRight,
+    LT.center,
 
-  -- * Folds
-  , LT.foldl
-  , LT.foldl'
-  , LT.foldl1
-  , LT.foldl1'
-  , LT.foldr
-  , LT.foldr1
+    -- * Folds
+    LT.foldl,
+    LT.foldl',
+    LT.foldl1,
+    LT.foldl1',
+    LT.foldr,
+    LT.foldr1,
 
-  -- ** Special folds
-  , LT.concat
-  , LT.concatMap
-  , LT.any
-  , LT.all
-  , LT.maximum
-  , LT.minimum
-  , LT.isAscii
+    -- ** Special folds
+    LT.concat,
+    LT.concatMap,
+    LT.any,
+    LT.all,
+    LT.maximum,
+    LT.minimum,
+    LT.isAscii,
 
-  -- * Construction
+    -- * Construction
 
-  -- ** Scans
-  , LT.scanl
-  , LT.scanl1
-  , LT.scanr
-  , LT.scanr1
+    -- ** Scans
+    LT.scanl,
+    LT.scanl1,
+    LT.scanr,
+    LT.scanr1,
 
-  -- ** Accumulating maps
-  , LT.mapAccumL
-  , LT.mapAccumR
+    -- ** Accumulating maps
+    LT.mapAccumL,
+    LT.mapAccumR,
 
-  -- ** Generation and unfolding
-  , LT.replicate
-  , LT.unfoldr
-  , LT.unfoldrN
+    -- ** Generation and unfolding
+    LT.replicate,
+    LT.unfoldr,
+    LT.unfoldrN,
 
-  -- * Substrings
+    -- * Substrings
 
-  -- ** Breaking strings
-  , LT.take
-  , LT.takeEnd
-  , LT.drop
-  , LT.dropEnd
-  , LT.takeWhile
-  , LT.takeWhileEnd
-  , LT.dropWhile
-  , LT.dropWhileEnd
-  , LT.dropAround
-  , LT.strip
-  , LT.stripStart
-  , LT.stripEnd
-  , LT.splitAt
-  , LT.breakOn
-  , LT.breakOnEnd
-  , LT.break
-  , LT.span
-  , LT.spanM
-  , LT.spanEndM
-  , LT.group
-  , LT.groupBy
-  , LT.inits
-  , LT.tails
+    -- ** Breaking strings
+    LT.take,
+    LT.takeEnd,
+    LT.drop,
+    LT.dropEnd,
+    LT.takeWhile,
+    LT.takeWhileEnd,
+    LT.dropWhile,
+    LT.dropWhileEnd,
+    LT.dropAround,
+    LT.strip,
+    LT.stripStart,
+    LT.stripEnd,
+    LT.splitAt,
+    LT.breakOn,
+    LT.breakOnEnd,
+    LT.break,
+    LT.span,
+    LT.spanM,
+    LT.spanEndM,
+    LT.group,
+    LT.groupBy,
+    LT.inits,
+    LT.tails,
 
-  -- ** Breaking into many substrings
-  -- $split
-  , LT.splitOn
-  , LT.split
-  , LT.chunksOf
+    -- ** Breaking into many substrings
+    -- $split
+    LT.splitOn,
+    LT.split,
+    LT.chunksOf,
 
-  -- ** Breaking into lines and words
-  , LT.lines
-  --, LT.lines'
-  , LT.words
-  , LT.unlines
-  , LT.unwords
+    -- ** Breaking into lines and words
+    LT.lines,
+    --, LT.lines'
+    LT.words,
+    LT.unlines,
+    LT.unwords,
 
-  -- * Predicates
-  , LT.isPrefixOf
-  , LT.isSuffixOf
-  , LT.isInfixOf
+    -- * Predicates
+    LT.isPrefixOf,
+    LT.isSuffixOf,
+    LT.isInfixOf,
 
-  -- ** View patterns
-  , LT.stripPrefix
-  , LT.stripSuffix
-  , LT.commonPrefixes
+    -- ** View patterns
+    LT.stripPrefix,
+    LT.stripSuffix,
+    LT.commonPrefixes,
 
-  -- * Searching
-  , LT.filter
-  , LT.breakOnAll
-  , LT.find
-  , LT.elem
-  , LT.partition
+    -- * Searching
+    LT.filter,
+    LT.breakOnAll,
+    LT.find,
+    LT.elem,
+    LT.partition,
 
-  -- , LT.findSubstring
+    -- , LT.findSubstring
 
-  -- * Indexing
-  -- $index
-  , LT.index
-  , LT.count
+    -- * Indexing
+    -- $index
+    LT.index,
+    LT.count,
 
-  -- * Zipping
-  , LT.zip
-  , LT.zipWith
+    -- * Zipping
+    LT.zip,
+    LT.zipWith,
 
-  -- * File reading
-  , readFile
+    -- * File reading
+    readFile,
 
   ) where
 

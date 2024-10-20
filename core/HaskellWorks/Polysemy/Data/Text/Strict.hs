@@ -1,141 +1,141 @@
 module HaskellWorks.Polysemy.Data.Text.Strict
-  ( T.Text
+  ( T.Text,
 
-  -- * Creation and elimination
-  , T.pack
-  , T.unpack
-  , T.singleton
-  , T.empty
+    -- * Creation and elimination
+    T.pack,
+    T.unpack,
+    T.singleton,
+    T.empty,
 
-  -- * Basic interface
-  , T.length
-  , T.compareLength
-  , T.null
+    -- * Basic interface
+    T.length,
+    T.compareLength,
+    T.null,
 
-  -- * Transformations
-  , T.map
-  , T.intercalate
-  , T.intersperse
-  , T.transpose
-  , T.reverse
-  , T.replace
+    -- * Transformations
+    T.map,
+    T.intercalate,
+    T.intersperse,
+    T.transpose,
+    T.reverse,
+    T.replace,
 
-  -- ** Case conversion
-  -- $case
-  , T.toCaseFold
-  , T.toLower
-  , T.toUpper
-  , T.toTitle
+    -- ** Case conversion
+    -- $case
+    T.toCaseFold,
+    T.toLower,
+    T.toUpper,
+    T.toTitle,
 
-  -- ** Justification
-  , T.justifyLeft
-  , T.justifyRight
-  , T.center
+    -- ** Justification
+    T.justifyLeft,
+    T.justifyRight,
+    T.center,
 
-  -- * Folds
-  , T.foldl
-  , T.foldl'
-  , T.foldl1
-  , T.foldl1'
-  , T.foldr
-  , T.foldr'
-  , T.foldr1
+    -- * Folds
+    T.foldl,
+    T.foldl',
+    T.foldl1,
+    T.foldl1',
+    T.foldr,
+    T.foldr',
+    T.foldr1,
 
-  -- ** Special folds
-  , T.concat
-  , T.concatMap
-  , T.any
-  , T.all
-  , T.maximum
-  , T.minimum
-  , T.isAscii
+    -- ** Special folds
+    T.concat,
+    T.concatMap,
+    T.any,
+    T.all,
+    T.maximum,
+    T.minimum,
+    T.isAscii,
 
-  -- * Construction
+    -- * Construction
 
-  -- ** Scans
-  , T.scanl
-  , T.scanl1
-  , T.scanr
-  , T.scanr1
+    -- ** Scans
+    T.scanl,
+    T.scanl1,
+    T.scanr,
+    T.scanr1,
 
-  -- ** Accumulating maps
-  , T.mapAccumL
-  , T.mapAccumR
+    -- ** Accumulating maps
+    T.mapAccumL,
+    T.mapAccumR,
 
-  -- ** Generation and unfolding
-  , T.replicate
-  , T.unfoldr
-  , T.unfoldrN
+    -- ** Generation and unfolding
+    T.replicate,
+    T.unfoldr,
+    T.unfoldrN,
 
-  -- * Substrings
+    -- * Substrings
 
-  -- ** Breaking strings
-  , T.take
-  , T.takeEnd
-  , T.drop
-  , T.dropEnd
-  , T.takeWhile
-  , T.takeWhileEnd
-  , T.dropWhile
-  , T.dropWhileEnd
-  , T.dropAround
-  , T.strip
-  , T.stripStart
-  , T.stripEnd
-  , T.splitAt
-  , T.breakOn
-  , T.breakOnEnd
-  , T.break
-  , T.span
-  , T.spanM
-  , T.spanEndM
-  , T.group
-  , T.groupBy
-  , T.inits
-  , T.tails
+    -- ** Breaking strings
+    T.take,
+    T.takeEnd,
+    T.drop,
+    T.dropEnd,
+    T.takeWhile,
+    T.takeWhileEnd,
+    T.dropWhile,
+    T.dropWhileEnd,
+    T.dropAround,
+    T.strip,
+    T.stripStart,
+    T.stripEnd,
+    T.splitAt,
+    T.breakOn,
+    T.breakOnEnd,
+    T.break,
+    T.span,
+    T.spanM,
+    T.spanEndM,
+    T.group,
+    T.groupBy,
+    T.inits,
+    T.tails,
 
-  -- ** Breaking into many substrings
-  -- $split
-  , T.splitOn
-  , T.split
-  , T.chunksOf
+    -- ** Breaking into many substrings
+    -- $split
+    T.splitOn,
+    T.split,
+    T.chunksOf,
 
-  -- ** Breaking into lines and words
-  , T.lines
-  --, T.lines'
-  , T.words
-  , T.unlines
-  , T.unwords
+    -- ** Breaking into lines and words
+    T.lines,
+    --, T.lines'
+    T.words,
+    T.unlines,
+    T.unwords,
 
-  -- * Predicates
-  , T.isPrefixOf
-  , T.isSuffixOf
-  , T.isInfixOf
+    -- * Predicates
+    T.isPrefixOf,
+    T.isSuffixOf,
+    T.isInfixOf,
 
-  -- ** View patterns
-  , T.stripPrefix
-  , T.stripSuffix
-  , T.commonPrefixes
+    -- ** View patterns
+    T.stripPrefix,
+    T.stripSuffix,
+    T.commonPrefixes,
 
-  -- * Searching
-  , T.filter
-  , T.breakOnAll
-  , T.find
-  , T.elem
-  , T.partition
+    -- * Searching
+    T.filter,
+    T.breakOnAll,
+    T.find,
+    T.elem,
+    T.partition,
 
-  -- * Indexing
-  -- $index
-  , T.index
-  , T.findIndex
-  , T.count
+    -- * Indexing
+    -- $index
+    T.index,
+    T.findIndex,
+    T.count,
 
-  -- * Zipping
-  , T.zip
-  , T.zipWith
+    -- * Zipping
+    T.zip,
+    T.zipWith,
 
-  -- * File reading
-  , readFile
+    -- * File reading
+    readFile,
 
   ) where
 

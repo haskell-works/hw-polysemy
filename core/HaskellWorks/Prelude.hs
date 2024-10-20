@@ -1,158 +1,158 @@
 module HaskellWorks.Prelude
-  ( Bool(..)
-  , Char(..)
-  , Maybe(..)
-  , Either(..)
+  ( Bool(..),
+    Char(..),
+    Maybe(..),
+    Either(..),
 
-  , String
-  , Text
-  , ByteString
-  , Int
-  , Int8
-  , Int16
-  , Int32
-  , Int64
-  , Integer
-  , Word
-  , Word8
-  , Word16
-  , Word32
-  , Word64
-  , Float
-  , Double
-  , FilePath
-  , Void
+    String,
+    Text,
+    ByteString,
+    Int,
+    Int8,
+    Int16,
+    Int32,
+    Int64,
+    Integer,
+    Word,
+    Word8,
+    Word16,
+    Word32,
+    Word64,
+    Float,
+    Double,
+    FilePath,
+    Void,
 
-  , Eq(..)
-  , Ord(..)
-  , Num(..)
-  , Show(..)
-  , IsString(..)
-  , tshow
+    Eq(..),
+    Ord(..),
+    Num(..),
+    Show(..),
+    IsString(..),
+    tshow,
 
-  , bool
-  , const
+    bool,
+    const,
 
-  , absurd
-  , vacuous
+    absurd,
+    vacuous,
 
-  , either
-  , lefts
-  , rights
-  , isLeft
-  , isRight
-  , fromLeft
-  , fromRight
+    either,
+    lefts,
+    rights,
+    isLeft,
+    isRight,
+    fromLeft,
+    fromRight,
 
-  , maybe
-  , isJust
-  , isNothing
-  , fromMaybe
-  , listToMaybe
-  , maybeToList
-  , catMaybes
-  , mapMaybe
+    maybe,
+    isJust,
+    isNothing,
+    fromMaybe,
+    listToMaybe,
+    maybeToList,
+    catMaybes,
+    mapMaybe,
 
-  , fst
-  , flip
-  , snd
-  , id
-  , seq
-  , curry
-  , uncurry
-  , ($!)
-  , ($)
-  , (&)
-  , not
-  , otherwise
-  , (&&)
-  , (||)
-  , (.)
-  , (</>)
+    fst,
+    flip,
+    snd,
+    id,
+    seq,
+    curry,
+    uncurry,
+    ($!),
+    ($),
+    (&),
+    not,
+    otherwise,
+    (&&),
+    (||),
+    (.),
+    (</>),
 
-  , void
-  , mapM_
-  , forM
-  , forM_
-  , sequence_
-  , (=<<)
-  , (>=>)
-  , (<=<)
-  , forever
-  , join
-  , msum
-  , mfilter
-  , filterM
-  , foldM
-  , foldM_
-  , replicateM
-  , replicateM_
-  , guard
-  , when
-  , unless
-  , liftM
-  , liftM2
-  , liftM3
-  , liftM4
-  , liftM5
-  , ap
-  , (<$!>)
+    void,
+    mapM_,
+    forM,
+    forM_,
+    sequence_,
+    (=<<),
+    (>=>),
+    (<=<),
+    forever,
+    join,
+    msum,
+    mfilter,
+    filterM,
+    foldM,
+    foldM_,
+    replicateM,
+    replicateM_,
+    guard,
+    when,
+    unless,
+    liftM,
+    liftM2,
+    liftM3,
+    liftM4,
+    liftM5,
+    ap,
+    (<$!>),
 
-  , (<$>)
+    (<$>),
 
-  , (<**>)
-  , liftA
-  , liftA3
-  , optional
-  , asum
+    (<**>),
+    liftA,
+    liftA3,
+    optional,
+    asum,
 
-  , for_
+    for_,
 
-  , Fractional(..)
-  , Real(..)
-  , RealFrac(..)
-  , Ratio(..)
-  , Rational
-  , fromIntegral
-  , realToFrac
-  , even
-  , odd
-  , numericEnumFrom
-  , numericEnumFromThen
-  , numericEnumFromTo
-  , numericEnumFromThenTo
-  , integralEnumFrom
-  , integralEnumFromThen
-  , integralEnumFromTo
-  , integralEnumFromThenTo
-  , numerator
-  , denominator
-  , (%)
+    Fractional(..),
+    Real(..),
+    RealFrac(..),
+    Ratio(..),
+    Rational,
+    fromIntegral,
+    realToFrac,
+    even,
+    odd,
+    numericEnumFrom,
+    numericEnumFromThen,
+    numericEnumFromTo,
+    numericEnumFromThenTo,
+    integralEnumFrom,
+    integralEnumFromThen,
+    integralEnumFromTo,
+    integralEnumFromThenTo,
+    numerator,
+    denominator,
+    (%),
 
-  , Monad(..)
-  , MonadFail(..)
-  , MonadPlus(..)
-  , Applicative(..)
-  , Alternative(..)
-  , Contravariant(..)
-  , Divisible(..)
-  , Functor(..)
-  , Bifunctor(..)
-  , Semigroup(..)
-  , Monoid(..)
-  , Foldable(..)
-  , Traversable(..)
+    Monad(..),
+    MonadFail(..),
+    MonadPlus(..),
+    Applicative(..),
+    Alternative(..),
+    Contravariant(..),
+    Divisible(..),
+    Functor(..),
+    Bifunctor(..),
+    Semigroup(..),
+    Monoid(..),
+    Foldable(..),
+    Traversable(..),
 
-  , IO
+    IO,
 
-  , CallStack
-  , HasCallStack
-  , withFrozenCallStack
+    CallStack,
+    HasCallStack,
+    withFrozenCallStack,
 
-  , Generic
+    Generic,
 
-  , IOException
-  , SomeException(..)
+    IOException,
+    SomeException(..),
   ) where
 
 import           Control.Applicative

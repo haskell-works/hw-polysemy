@@ -1,9 +1,9 @@
 module HaskellWorks.Polysemy.Error
-  ( module HaskellWorks.Error
-  , trap
-  , trap_
-  , embedRunExceptT
-  , embedThrowExceptT
+  ( module HaskellWorks.Error,
+    trap,
+    trap_,
+    embedRunExceptT,
+    embedThrowExceptT,
   ) where
 
 import           Control.Monad.Except

@@ -1,5 +1,5 @@
 module HaskellWorks.Polysemy.OS
-  ( isWin32
+  ( isWin32,
   ) where
 
 import           Data.Bool

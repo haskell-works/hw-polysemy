@@ -1,8 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module HaskellWorks.Error.Types
-  ( GenericError(..)
-  , TimedOut(..)
+  ( GenericError(..),
+    TimedOut(..),
   ) where
 
 import           HaskellWorks.Polysemy.Prelude

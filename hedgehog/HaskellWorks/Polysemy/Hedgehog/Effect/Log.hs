@@ -1,6 +1,6 @@
 module HaskellWorks.Polysemy.Hedgehog.Effect.Log
-  ( interpretDataLogHedgehog
-  , getLogEntryCallStack
+  ( interpretDataLogHedgehog,
+    getLogEntryCallStack,
   ) where
 
 import qualified Data.Text                                      as Text

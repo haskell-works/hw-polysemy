@@ -1,5 +1,5 @@
 module HaskellWorks.Polysemy.Stack
-  ( callerModuleName
+  ( callerModuleName,
   ) where
 
 import           GHC.Stack                     (callStack, getCallStack,

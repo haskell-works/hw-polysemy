@@ -1,6 +1,6 @@
 module HaskellWorks.IO.Process
-  ( maybeWaitForProcess
-  , waitSecondsForProcess
+  ( maybeWaitForProcess,
+    waitSecondsForProcess,
   ) where
 
 import           Control.Concurrent       as IO

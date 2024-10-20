@@ -1,5 +1,5 @@
 module HaskellWorks.Polysemy.String
-  ( ToString(..)
+  ( ToString(..),
   ) where
 
 

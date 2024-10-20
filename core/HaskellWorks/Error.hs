@@ -1,8 +1,8 @@
 module HaskellWorks.Error
-  ( onLeft
-  , onNothing
-  , onLeftM
-  , onNothingM
+  ( onLeft,
+    onNothing,
+    onLeftM,
+    onNothingM,
   ) where
 
 import           HaskellWorks.Polysemy.Prelude

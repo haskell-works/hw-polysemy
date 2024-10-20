@@ -2,24 +2,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
-  ( Hedgehog
+  ( Hedgehog,
 
-  , assertEquals
-  , catchAssertion
-  , eval
-  , evalM
-  , evalIO
-  , writeLog
-  , failWith
-  , failWithCustom
-  , throwAssertion
-  , trapAssertion
+    assertEquals,
+    catchAssertion,
+    eval,
+    evalM,
+    evalIO,
+    writeLog,
+    failWith,
+    failWithCustom,
+    throwAssertion,
+    trapAssertion,
 
-  , hedgehogToMonadTestFinal
-  , hedgehogToPropertyFinal
-  , hedgehogToTestFinal
+    hedgehogToMonadTestFinal,
+    hedgehogToPropertyFinal,
+    hedgehogToTestFinal,
 
-  , catchExToPropertyFinal
+    catchExToPropertyFinal,
 
   ) where
 

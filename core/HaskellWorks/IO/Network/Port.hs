@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeApplications #-}
 
 module HaskellWorks.IO.Network.Port
-  ( randomPort
-  , reserveRandomPort
-  , portInUse
+  ( randomPort,
+    reserveRandomPort,
+    portInUse,
   ) where
 
 import           Control.Exception

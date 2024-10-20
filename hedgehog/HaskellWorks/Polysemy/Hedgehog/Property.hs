@@ -1,7 +1,6 @@
 module HaskellWorks.Polysemy.Hedgehog.Property
-  ( Property
-  , propertyOnce
-
+  ( Property,
+    propertyOnce,
   ) where
 
 import qualified GHC.Stack                                      as GHC

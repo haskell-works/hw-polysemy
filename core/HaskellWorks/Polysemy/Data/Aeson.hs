@@ -1,6 +1,6 @@
 module HaskellWorks.Polysemy.Data.Aeson
-  ( AesonDecodeError(..)
-  , aesonDecode
+  ( AesonDecodeError(..),
+    aesonDecode,
   ) where
 
 import qualified Data.Aeson                                 as Aeson
