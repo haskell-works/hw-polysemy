@@ -1,5 +1,6 @@
-{-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE GADTs        #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module HaskellWorks.Polysemy.Hedgehog.Jot
   ( jotShow,
@@ -19,6 +20,7 @@ module HaskellWorks.Polysemy.Hedgehog.Jot
     jotShowM_,
     jotShowIO,
     jotShowIO_,
+    jotShowRead,
     jotJson,
     jotJson_,
     jotJsonM,
@@ -61,6 +63,7 @@ import qualified Data.Text.Lazy.Encoding                        as LT
 import qualified Data.Yaml                                      as Y
 import qualified GHC.Stack                                      as GHC
 import           HaskellWorks.Polysemy.Prelude
+import           Text.Read                                      (read)
 
 import qualified Hedgehog.Internal.Property                     as H
 import qualified Hedgehog.Internal.Source                       as H
@@ -243,6 +246,19 @@ jotShowIO_ f = GHC.withFrozenCallStack $ do
   !a <- evalIO f
   jotWithCallstack GHC.callStack (show a)
   return ()
+
+-- | Annotate the given value.
+jotShowRead :: forall a r. ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Read a
+  => Show a
+  => String
+  -> Sem r a
+jotShowRead s = GHC.withFrozenCallStack $ do
+  !a <- eval (read @a s)
+  jotWithCallstack GHC.callStack (show a)
+  return a
 
 -- | Annotate the given value as JSON.
 jotJson :: forall a r. ()

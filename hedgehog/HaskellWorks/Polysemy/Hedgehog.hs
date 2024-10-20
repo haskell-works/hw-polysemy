@@ -76,6 +76,7 @@ module HaskellWorks.Polysemy.Hedgehog
     jotYamlM_,
     jotShowIO,
     jotShowIO_,
+    jotShowRead,
     jotEach,
     jotEach_,
     jotEachM,
