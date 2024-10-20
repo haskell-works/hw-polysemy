@@ -110,7 +110,6 @@ import qualified System.IO                     as IO
 import           System.IO                     (BufferMode, Handle, HandlePosn,
                                                 IOMode, NewlineMode, SeekMode,
                                                 TextEncoding)
-import           Text.Read
 
 import           Polysemy
 import           Polysemy.Error
