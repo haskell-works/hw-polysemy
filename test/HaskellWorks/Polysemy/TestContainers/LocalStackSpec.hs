@@ -20,22 +20,29 @@ import           HaskellWorks.Polysemy.Amazonka.LocalStack
 import           HaskellWorks.Polysemy.Hedgehog
 import           HaskellWorks.Prelude
 import           Polysemy
+import qualified System.Info                               as OS
 import qualified TestContainers.Tasty                      as TC
 
 {- HLINT ignore "Use camelCase" -}
 
+isWindows :: Bool
+isWindows = OS.os == "mingw32"
+
 tasty_local_stack :: Tasty.TestTree
 tasty_local_stack =
-  TC.withContainers (setupContainers' "localstack/localstack-pro:3.7.2") $ \getContainer ->
-    H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv getContainer $ do
-      container <- embed getContainer
-      ep <- getLocalStackEndpoint container
-      jotYamlM_ $ inspectContainer container
-      jotShow_ ep
-      listBucketsReq <- pure AWS.newListBuckets
+  if isWindows
+    then Tasty.testGroup "LocalStackSpec skipped on Windows" []
+    else
+      TC.withContainers (setupContainers' "localstack/localstack-pro:3.7.2") $ \getContainer ->
+        H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv getContainer $ do
+          container <- embed getContainer
+          ep <- getLocalStackEndpoint container
+          jotYamlM_ $ inspectContainer container
+          jotShow_ ep
+          listBucketsReq <- pure AWS.newListBuckets
 
-      listBucketResp <- sendAws listBucketsReq
-        & jotShowDataLog @AwsLogEntry
-        & trapFail
+          listBucketResp <- sendAws listBucketsReq
+            & jotShowDataLog @AwsLogEntry
+            & trapFail
 
-      jotShow_ listBucketResp
+          jotShow_ listBucketResp
