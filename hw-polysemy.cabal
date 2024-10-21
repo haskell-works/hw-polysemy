@@ -61,7 +61,7 @@ common yaml                       { build-depends: yaml                         
 
 common Win32
   if os(windows)
-    build-depends:      Win32   >= 2.5.4.1
+    build-depends:      Win32   >= 2.5.4.1 && < 3
 
 common hw-polysemy                            { build-depends: hw-polysemy                                          }
 common hw-polysemy-amazonka                   { build-depends: hw-polysemy:amazonka                                 }
@@ -125,9 +125,6 @@ library core
                         Win32,
                         yaml,
   visibility:           public
-
-  if os(windows)
-    exposed-modules:    HaskellWorks.IO.Win32.NamedPipe
 
   exposed-modules:      HaskellWorks.Polysemy
                         HaskellWorks.Polysemy.Cabal
