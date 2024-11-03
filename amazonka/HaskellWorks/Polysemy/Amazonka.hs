@@ -5,7 +5,8 @@
 {- HLINT ignore "Use let" -}
 
 module HaskellWorks.Polysemy.Amazonka
-  ( AwsLogEntry(..),
+  ( AwsError,
+    AwsLogEntry(..),
     runReaderAwsEnvDiscover,
     sendAws,
     interpretDataLogAwsLogEntryToLog,
@@ -30,6 +31,7 @@ import qualified Data.Text.Encoding                                as T
 import qualified Data.Text.Lazy                                    as LT
 import qualified Data.Text.Lazy.Encoding                           as LT
 import qualified GHC.Stack                                         as GHC
+import           HaskellWorks.Polysemy.Amazonka.Errors
 import           HaskellWorks.Polysemy.Control.Concurrent.STM.TVar
 import           HaskellWorks.Polysemy.Log
 import           HaskellWorks.Polysemy.System.Environment
@@ -85,12 +87,25 @@ runReaderAwsEnvDiscover f = do
 
   runReader awsEnv f
 
+sendAwsInternal :: ()
+  => AWS.AWSRequest a
+  => Member (Embed m) r
+  => Member (Error AwsError) r
+  => MonadIO m
+  => Typeable (AWS.AWSResponse a)
+  => Typeable a
+  => AWS.Env
+  -> a
+  -> Sem r (AWS.AWSResponse a)
+sendAwsInternal envAws req =
+  fromEither =<< embed (liftIO $ runResourceT $ AWS.sendEither envAws req)
+
 sendAws :: forall a r m. ()
   => HasCallStack
   => AWS.AWSRequest a
   => Member (DataLog AwsLogEntry) r
   => Member (Embed m) r
-  => Member (Error AWS.Error) r
+  => Member (Error AwsError) r
   => Member (Reader AWS.Env) r
   => Member Resource r
   => MonadIO m
@@ -107,7 +122,7 @@ sendAws req = GHC.withFrozenCallStack $ do
 
   let envAws1 = envAws0 { AWS.logger = logger }
 
-  (fromEither =<< embed (liftIO $ runResourceT $ AWS.sendEither envAws1 req))
+  sendAwsInternal envAws1 req
     & do flip finally do
             entries <- L.reverse <$> readTVarIO tStack
             forM_ entries dataLog

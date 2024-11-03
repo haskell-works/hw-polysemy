@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module HaskellWorks.Polysemy.File
   ( JsonDecodeError(..)
   , YamlDecodeError(..)
@@ -8,22 +6,17 @@ module HaskellWorks.Polysemy.File
   ) where
 
 import           Data.Aeson
-import qualified Data.Aeson                                 as J
-import qualified Data.Yaml                                  as Y
-import           GHC.Generics
-import qualified HaskellWorks.Polysemy.Data.ByteString.Lazy as LBS
-import qualified HaskellWorks.Polysemy.Data.Text            as T
+import qualified Data.Aeson                                        as J
+import qualified Data.Yaml                                         as Y
+import qualified HaskellWorks.Polysemy.Data.ByteString.Lazy        as LBS
+import qualified HaskellWorks.Polysemy.Data.Text                   as T
 import           HaskellWorks.Polysemy.Error
+import           HaskellWorks.Polysemy.Error.Types.JsonDecodeError
+import           HaskellWorks.Polysemy.Error.Types.YamlDecodeError
 import           HaskellWorks.Polysemy.Prelude
 import           Polysemy
 import           Polysemy.Error
 import           Polysemy.Log
-
-newtype JsonDecodeError = JsonDecodeError { message :: String }
-  deriving (Eq, Generic, Show)
-
-newtype YamlDecodeError = YamlDecodeError { message :: String }
-  deriving (Eq, Generic, Show)
 
 -- | Read the 'filePath' file as JSON. Use @readJsonFile \@'Value'@ to decode into 'Value'.
 readJsonFile :: forall a r. ()
