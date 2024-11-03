@@ -35,7 +35,8 @@ common generic-lens               { build-depends: generic-lens                 
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.12   }
 common hedgehog                   { build-depends: hedgehog                                    < 1.6    }
 common http-conduit               { build-depends: http-conduit               >= 2.3        && < 2.4    }
-common hw-prelude                 { build-depends: hw-prelude                 >= 0.0.0.2    && < 0.1    }
+common hw-prelude                 { build-depends: hw-prelude                 >= 0.0.0.3    && < 0.1    }
+common microlens                  { build-depends: microlens                                   < 5      }
 common lens                       { build-depends: lens                                        < 5.4    }
 common mtl                        { build-depends: mtl                                         < 2.4    }
 common network                    { build-depends: network                                     < 3.3    }
@@ -101,24 +102,25 @@ library core
                         async,
                         bytestring,
                         contravariant,
-                        exceptions,
                         directory,
+                        exceptions,
                         filepath,
                         generic-lens,
                         ghc-prim,
                         hedgehog,
                         hw-prelude,
                         lens,
+                        microlens,
                         mtl,
                         network,
-                        polysemy,
                         polysemy-log,
                         polysemy-time,
+                        polysemy,
                         process,
                         resourcet,
                         stm,
-                        text,
                         temporary,
+                        text,
                         time,
                         ulid,
                         unliftio,
@@ -144,6 +146,9 @@ library core
                         HaskellWorks.Polysemy.Data.ULID
                         HaskellWorks.Polysemy.Error
                         HaskellWorks.Polysemy.Error.Types
+                        HaskellWorks.Polysemy.Error.Types.All
+                        HaskellWorks.Polysemy.Error.Types.JsonDecodeError
+                        HaskellWorks.Polysemy.Error.Types.YamlDecodeError
                         HaskellWorks.Polysemy.Except
                         HaskellWorks.Polysemy.File
                         HaskellWorks.Polysemy.FilePath
@@ -211,6 +216,7 @@ library hedgehog
 
 library amazonka
   import:               base, project-config,
+                        aeson,
                         amazonka,
                         binary,
                         generic-lens,
@@ -224,6 +230,9 @@ library amazonka
                         stm,
   visibility:           public
   exposed-modules:      HaskellWorks.Polysemy.Amazonka
+                        HaskellWorks.Polysemy.Amazonka.Errors
+                        HaskellWorks.Polysemy.Amazonka.Errors.All
+                        HaskellWorks.Polysemy.Amazonka.Errors.AwsError
   hs-source-dirs:       amazonka
   default-language:     Haskell2010
 
