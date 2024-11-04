@@ -1,5 +1,6 @@
 module HaskellWorks.Polysemy.Hedgehog.Property
   ( Property,
+    property,
     propertyOnce,
   ) where
 
@@ -19,6 +20,33 @@ import           Polysemy.Log
 import           Polysemy.Resource
 import           Polysemy.Time.Interpreter.Ghc
 
+property :: ()
+  => Sem
+        [ Log
+        , DataLog (LogEntry LogMessage)
+        , DataLog Text
+        , GhcTime
+        , Hedgehog
+        , Embed IO
+        , Embed (H.PropertyT IO)
+        , Resource
+        , Final (H.PropertyT IO)
+        ] ()
+  -> H.Property
+property f =
+    f & interpretLogDataLog
+      & setLogLevelFromEnv "LOG_LEVEL" Info
+      & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
+      & interpretDataLogHedgehog id (const GHC.callStack)
+      & interpretTimeGhc
+      & hedgehogToPropertyFinal
+      & runEmbedded liftIO
+      & embedToFinal @(H.PropertyT IO)
+      & runResource
+      & runFinal
+      & H.property
+      & H.withTests 1
+
 propertyOnce :: ()
   => Sem
         [ Log
@@ -33,15 +61,5 @@ propertyOnce :: ()
         ] ()
   -> H.Property
 propertyOnce f =
-    f & interpretLogDataLog
-      & setLogLevelFromEnv "LOG_LEVEL" Info
-      & interpretDataLogHedgehog formatLogEntry getLogEntryCallStack
-      & interpretDataLogHedgehog id (const GHC.callStack)
-      & interpretTimeGhc
-      & hedgehogToPropertyFinal
-      & runEmbedded liftIO
-      & embedToFinal @(H.PropertyT IO)
-      & runResource
-      & runFinal
-      & H.property
+    f & property
       & H.withTests 1

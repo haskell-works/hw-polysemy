@@ -4,6 +4,7 @@
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   ( Hedgehog,
 
+    assert,
     assertEquals,
     catchAssertion,
     eval,
@@ -14,6 +15,10 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
     failWithCustom,
     throwAssertion,
     trapAssertion,
+
+    forAll,
+    classify,
+    success,
 
     hedgehogToMonadTestFinal,
     hedgehogToPropertyFinal,
@@ -36,6 +41,10 @@ import           Polysemy
 import           Polysemy.Final
 
 data Hedgehog m rv where
+  Assert :: HasCallStack
+    => Bool
+    -> Hedgehog m ()
+
   AssertEquals :: (HasCallStack, Eq a, Show a)
     => a
     -> a
@@ -45,6 +54,11 @@ data Hedgehog m rv where
     => m a
     -> (H.Failure -> m a)
     -> Hedgehog m a
+
+  Classify ::  HasCallStack
+    => H.LabelName
+    -> Bool
+    -> Hedgehog m ()
 
   Eval :: HasCallStack
     => a
@@ -95,6 +109,8 @@ hedgehogToMonadTestFinal :: forall a r m. ()
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToMonadTestFinal = interpretFinal \case
+  Assert t ->
+    liftS $ H.assert t
   AssertEquals a b ->
     liftS $ a H.=== b
   CatchAssertion f h -> do
@@ -103,6 +119,8 @@ hedgehogToMonadTestFinal = interpretFinal \case
     h' <- bindS h
     pure $ I.catchAssertion f' $ \e -> do
       h' (e <$ s)
+  Classify labelName b ->
+    liftS $ H.classify labelName b
   Eval a ->
     liftS $ H.eval a
   EvalIO f ->
@@ -138,3 +156,18 @@ catchExToPropertyFinal :: forall a r. ()
   -> Sem r a
 catchExToPropertyFinal = catchExToFinal
 {-# INLINE catchExToPropertyFinal #-}
+
+forAll :: forall a r. ()
+  => Member (Embed (H.PropertyT IO)) r
+  => Member Hedgehog r
+  => Show a
+  => H.Gen a
+  -> Sem r a
+forAll =
+  embed . H.forAll
+
+success :: forall r. ()
+  => Member Hedgehog r
+  => Sem r ()
+success =
+  pure ()

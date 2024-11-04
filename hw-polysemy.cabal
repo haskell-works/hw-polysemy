@@ -201,11 +201,13 @@ library hedgehog
                         HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal
                         HaskellWorks.Polysemy.Hedgehog.Effect.Log
                         HaskellWorks.Polysemy.Hedgehog.Eval
+                        HaskellWorks.Polysemy.Hedgehog.Gen
                         HaskellWorks.Polysemy.Hedgehog.Golden
                         HaskellWorks.Polysemy.Hedgehog.Jot
                         HaskellWorks.Polysemy.Hedgehog.Process
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal
                         HaskellWorks.Polysemy.Hedgehog.Property
+                        HaskellWorks.Polysemy.Hedgehog.Range
                         HaskellWorks.Polysemy.Hedgehog.Test
                         HaskellWorks.Polysemy.Hedgehog.Time
                         HaskellWorks.Polysemy.Hedgehog.Ulid
@@ -289,11 +291,13 @@ library
                         HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal,
                         HaskellWorks.Polysemy.Hedgehog.Effect.Log,
                         HaskellWorks.Polysemy.Hedgehog.Eval,
+                        HaskellWorks.Polysemy.Hedgehog.Gen,
                         HaskellWorks.Polysemy.Hedgehog.Golden,
                         HaskellWorks.Polysemy.Hedgehog.Jot,
                         HaskellWorks.Polysemy.Hedgehog.Process,
                         HaskellWorks.Polysemy.Hedgehog.Process.Internal,
                         HaskellWorks.Polysemy.Hedgehog.Property,
+                        HaskellWorks.Polysemy.Hedgehog.Range,
                         HaskellWorks.Polysemy.Hedgehog.Test,
                         HaskellWorks.Polysemy.Hedgehog.Workspace,
                         HaskellWorks.Polysemy.Prelude,

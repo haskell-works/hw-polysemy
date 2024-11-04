@@ -1,6 +1,7 @@
 
 module HaskellWorks.Polysemy.Hedgehog
-  ( propertyOnce,
+  ( property,
+    propertyOnce,
 
     Hedgehog,
 
@@ -26,8 +27,10 @@ module HaskellWorks.Polysemy.Hedgehog
     trapFailJsonPretty,
     trapFailYaml,
 
+    success,
     failure,
     failMessage,
+    assert,
     (===),
 
     byDeadlineIO,
@@ -43,6 +46,9 @@ module HaskellWorks.Polysemy.Hedgehog
     failWithCustom,
     evalIO_,
     evalM_,
+
+    classify,
+    forAll,
 
     catchAssertion,
     throwAssertion,
