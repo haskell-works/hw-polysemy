@@ -1,6 +1,7 @@
 
 module HaskellWorks.Polysemy.Hedgehog
-  ( propertyOnce,
+  ( property,
+    propertyOnce,
 
     Hedgehog,
 
