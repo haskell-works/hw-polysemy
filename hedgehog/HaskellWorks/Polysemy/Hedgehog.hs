@@ -27,6 +27,7 @@ module HaskellWorks.Polysemy.Hedgehog
     trapFailJsonPretty,
     trapFailYaml,
 
+    success,
     failure,
     failMessage,
     assert,
@@ -46,6 +47,7 @@ module HaskellWorks.Polysemy.Hedgehog
     evalIO_,
     evalM_,
 
+    classify,
     forAll,
 
     catchAssertion,

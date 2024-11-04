@@ -17,6 +17,8 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
     trapAssertion,
 
     forAll,
+    classify,
+    success,
 
     hedgehogToMonadTestFinal,
     hedgehogToPropertyFinal,
@@ -52,6 +54,11 @@ data Hedgehog m rv where
     => m a
     -> (H.Failure -> m a)
     -> Hedgehog m a
+
+  Classify ::  HasCallStack
+    => H.LabelName
+    -> Bool
+    -> Hedgehog m ()
 
   Eval :: HasCallStack
     => a
@@ -112,6 +119,8 @@ hedgehogToMonadTestFinal = interpretFinal \case
     h' <- bindS h
     pure $ I.catchAssertion f' $ \e -> do
       h' (e <$ s)
+  Classify labelName b ->
+    liftS $ H.classify labelName b
   Eval a ->
     liftS $ H.eval a
   EvalIO f ->
@@ -156,3 +165,9 @@ forAll :: forall a r. ()
   -> Sem r a
 forAll =
   embed . H.forAll
+
+success :: forall r. ()
+  => Member Hedgehog r
+  => Sem r ()
+success =
+  pure ()
