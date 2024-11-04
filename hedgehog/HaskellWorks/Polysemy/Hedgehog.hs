@@ -29,6 +29,7 @@ module HaskellWorks.Polysemy.Hedgehog
 
     failure,
     failMessage,
+    assert,
     (===),
 
     byDeadlineIO,

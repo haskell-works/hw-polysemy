@@ -4,6 +4,7 @@
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
   ( Hedgehog,
 
+    assert,
     assertEquals,
     catchAssertion,
     eval,
@@ -38,6 +39,10 @@ import           Polysemy
 import           Polysemy.Final
 
 data Hedgehog m rv where
+  Assert :: HasCallStack
+    => Bool
+    -> Hedgehog m ()
+
   AssertEquals :: (HasCallStack, Eq a, Show a)
     => a
     -> a
@@ -97,6 +102,8 @@ hedgehogToMonadTestFinal :: forall a r m. ()
   => Sem (Hedgehog ': r) a
   -> Sem r a
 hedgehogToMonadTestFinal = interpretFinal \case
+  Assert t ->
+    liftS $ H.assert t
   AssertEquals a b ->
     liftS $ a H.=== b
   CatchAssertion f h -> do
