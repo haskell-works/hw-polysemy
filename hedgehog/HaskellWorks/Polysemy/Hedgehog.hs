@@ -45,6 +45,8 @@ module HaskellWorks.Polysemy.Hedgehog
     evalIO_,
     evalM_,
 
+    forAll,
+
     catchAssertion,
     throwAssertion,
     trapAssertion,

@@ -15,6 +15,8 @@ module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog
     throwAssertion,
     trapAssertion,
 
+    forAll,
+
     hedgehogToMonadTestFinal,
     hedgehogToPropertyFinal,
     hedgehogToTestFinal,
@@ -138,3 +140,12 @@ catchExToPropertyFinal :: forall a r. ()
   -> Sem r a
 catchExToPropertyFinal = catchExToFinal
 {-# INLINE catchExToPropertyFinal #-}
+
+forAll :: forall a r. ()
+  => Member (Embed (H.PropertyT IO)) r
+  => Member Hedgehog r
+  => Show a
+  => H.Gen a
+  -> Sem r a
+forAll =
+  embed . H.forAll
