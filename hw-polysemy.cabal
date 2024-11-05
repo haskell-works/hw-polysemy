@@ -152,6 +152,7 @@ library core
                         HaskellWorks.Polysemy.Except
                         HaskellWorks.Polysemy.File
                         HaskellWorks.Polysemy.FilePath
+                        HaskellWorks.Polysemy.List
                         HaskellWorks.Polysemy.Log
                         HaskellWorks.Polysemy.OS
                         HaskellWorks.Polysemy.Prelude
