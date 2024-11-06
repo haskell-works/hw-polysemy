@@ -2,6 +2,7 @@ module HaskellWorks.Polysemy.Error
   ( module HaskellWorks.Error,
     trap,
     trap_,
+    runErrorMap,
     embedRunExceptT,
     embedThrowExceptT,
   ) where
@@ -29,6 +30,14 @@ trap_ :: forall e a r. ()
   -> Sem r a
 trap_ h =
   trap (const h)
+
+-- | Run an 'Error' effect and map the error value to a different type.
+runErrorMap :: ()
+  => (e -> d)
+  -> Sem (Error e : r) a
+  -> Sem r (Either d a)
+runErrorMap f =
+  fmap (first f) . runError
 
 embedRunExceptT :: forall e a r m. ()
   => Member (Embed m) r
