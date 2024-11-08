@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module HaskellWorks.Polysemy.Hedgehog.Golden
   ( diffVsGoldenFile,
     diffFileVsGoldenFile,

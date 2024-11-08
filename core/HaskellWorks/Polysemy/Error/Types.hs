@@ -1,9 +1,10 @@
 module HaskellWorks.Polysemy.Error.Types
   ( module HaskellWorks.Error.Types,
 
-    JsonDecodeError(JsonDecodeError),
-    YamlDecodeError(YamlDecodeError),
+    JsonDecodeError(..),
+    YamlDecodeError(..),
   ) where
 
 import           HaskellWorks.Error.Types
-import           HaskellWorks.Polysemy.Error.Types.All
+import           HaskellWorks.Polysemy.Error.Types.JsonDecodeError
+import           HaskellWorks.Polysemy.Error.Types.YamlDecodeError

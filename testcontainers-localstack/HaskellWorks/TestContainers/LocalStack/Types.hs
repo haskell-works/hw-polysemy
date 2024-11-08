@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GADTs         #-}
-
 module HaskellWorks.TestContainers.LocalStack.Types
   ( LocalStackEndpoint(..)
   ) where

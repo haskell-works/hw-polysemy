@@ -1,7 +1,3 @@
-{-# LANGUAGE BangPatterns        #-}
-{-# LANGUAGE GADTs               #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module HaskellWorks.Polysemy.Hedgehog.Jot
   ( jotShow,
     jotShow_,

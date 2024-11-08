@@ -1,6 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE StandaloneDeriving         #-}
-
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog.Internal
   ( MonadAssertion(..),
     failWithCustom,

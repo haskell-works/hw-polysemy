@@ -8,7 +8,7 @@ module HaskellWorks.Polysemy.Amazonka.LocalStack
 
 import qualified Amazonka                                     as AWS
 import qualified Amazonka.Auth                                as AWS
-import           Control.Lens                                 ((%~), (.~), (^.))
+import           Control.Lens                                 ((%~), (.~))
 import qualified Data.Aeson                                   as J
 import           Data.Generics.Product.Any
 import           HaskellWorks.Prelude
@@ -38,7 +38,7 @@ runReaderLocalAwsEnvDiscover mk f = do
   awsEnv <- pure $
     credEnv
       & the @"logger" .~ logger'
-      & the @"overrides" %~ (. AWS.setEndpoint False "localhost" (ep ^. the @"port"))
+      & the @"overrides" %~ (. AWS.setEndpoint False "localhost" ep.port)
 
   runReader awsEnv f
 

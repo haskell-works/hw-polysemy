@@ -1,4 +1,3 @@
-{-# LANGUAGE GADTs           #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 -- | Description: The 'Except' effect, providing catch and throw functionality over the final

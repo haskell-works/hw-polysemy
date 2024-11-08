@@ -1,6 +1,3 @@
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE TypeApplications   #-}
-
 module HaskellWorks.Polysemy.Hedgehog.Time (
     genPOSIXTime,
 ) where

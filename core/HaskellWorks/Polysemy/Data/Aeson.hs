@@ -9,7 +9,7 @@ import           Polysemy
 import           Polysemy.Error
 
 import           Data.Aeson                                        (FromJSON)
-import           HaskellWorks.Polysemy.Error.Types.JsonDecodeError (JsonDecodeError (JsonDecodeError))
+import           HaskellWorks.Polysemy.Error.Types.JsonDecodeError
 
 aesonDecode :: forall a r. ()
   => Member (Error JsonDecodeError) r
@@ -18,4 +18,4 @@ aesonDecode :: forall a r. ()
   -> Sem r a
 aesonDecode bs =
   fromEither (Aeson.eitherDecode bs)
-    & mapError JsonDecodeError
+    & mapError newJsonDecodeError

@@ -154,9 +154,9 @@ interpretDataLogAwsLogEntryLocalToLogWith :: forall r. ()
 interpretDataLogAwsLogEntryLocalToLogWith mapSeverity context =
   interpretH \case
     Log.DataLog logEntry -> do
-      let cs = logEntry ^. the @"callStack"
-      let severity = mapSeverity (logEntry ^. the @"logLevel")
-      let text = LT.toStrict (LT.decodeUtf8 (B.toLazyByteString (logEntry ^. the @"builder")))
+      let cs = logEntry.callStack
+      let severity = mapSeverity logEntry.logLevel
+      let text = LT.toStrict (LT.decodeUtf8 (B.toLazyByteString logEntry.builder))
       liftT (logCs cs severity text)
     Log.Local f ma ->
       raise . interpretDataLogAwsLogEntryLocalToLogWith mapSeverity (f . context) =<< runT ma

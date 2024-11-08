@@ -21,6 +21,7 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
     evalIO,
     failure,
     failMessage,
+    failMessageText,
     byDeadlineIO,
     byDeadlineM,
     byDurationIO,
@@ -44,11 +45,9 @@ module HaskellWorks.Polysemy.Hedgehog.Assert
 
 
 import qualified Control.Concurrent                             as IO
-import           Control.Lens                                   ((^.))
 import           Data.Aeson                                     (ToJSON, Value)
 import qualified Data.Aeson                                     as J
 import qualified Data.Aeson.Encode.Pretty                       as J
-import           Data.Generics.Product.Any
 import qualified Data.List                                      as L
 import qualified Data.Text                                      as T
 import qualified Data.Text.Encoding                             as T
@@ -122,6 +121,15 @@ failMessage :: forall a r. ()
   -> Sem r a
 failMessage cs =
   withFrozenCallStack $ failWithCustom cs Nothing
+
+failMessageText :: forall a r. ()
+  => Member Hedgehog r
+  => HasCallStack
+  => GHC.CallStack
+  -> Text
+  -> Sem r a
+failMessageText cs =
+  failMessage cs . T.unpack
 
 leftFailM :: forall e a r. ()
   => Member Hedgehog r
@@ -327,7 +335,7 @@ assertIsJsonFile_ :: forall r. ()
 assertIsJsonFile_ fp = withFrozenCallStack $ do
   void (readJsonFile @Value fp)
     & trap @IOException (failMessage GHC.callStack . show)
-    & trap @JsonDecodeError (\e -> failMessage GHC.callStack (e ^. the @"message"))
+    & trap @JsonDecodeError (\e -> failMessageText GHC.callStack e.message)
 
 -- | Assert the 'filePath' can be parsed as YAML.
 assertIsYamlFile :: forall r. ()
@@ -340,8 +348,8 @@ assertIsYamlFile :: forall r. ()
 assertIsYamlFile fp = withFrozenCallStack $ do
   void (readYamlFile @Value fp)
     & trap @IOException (failMessage GHC.callStack . show)
-    & trap @JsonDecodeError (\e -> failMessage GHC.callStack (e ^. the @"message"))
-    & trap @YamlDecodeError (\e -> failMessage GHC.callStack (e ^. the @"message"))
+    & trap @JsonDecodeError (\e -> failMessageText GHC.callStack e.message)
+    & trap @YamlDecodeError (\e -> failMessageText GHC.callStack e.message)
 
 -- | Asserts that the given file exists.
 assertFileExists :: forall r. ()

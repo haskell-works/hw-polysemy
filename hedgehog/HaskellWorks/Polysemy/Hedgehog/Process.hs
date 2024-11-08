@@ -183,8 +183,8 @@ exec :: ()
   -> Sem r (ExitCode, String, String) -- ^ exit code, stdout, stderr
 exec execConfig bin arguments = withFrozenCallStack $ do
   let cp = (proc bin arguments)
-        { env = getLast $ execConfigEnv execConfig
-        , cwd = getLast $ execConfigCwd execConfig
+        { env = getLast execConfig.execConfigEnv
+        , cwd = getLast execConfig.execConfigCwd
         }
   jot_ . ( "━━━━ command ━━━━\n" <>) $ bin <> " " <> L.unwords (argQuote <$> arguments)
   readCreateProcessWithExitCode cp ""
@@ -271,8 +271,8 @@ procFlex' :: ()
 procFlex' execConfig pkg binaryEnv arguments = withFrozenCallStack $ do
   bin <- binFlex pkg binaryEnv
   return (proc bin arguments)
-    { env = getLast $ execConfigEnv execConfig
-    , cwd = getLast $ execConfigCwd execConfig
+    { env = getLast execConfig.execConfigEnv
+    , cwd = getLast execConfig.execConfigCwd
     -- this allows sending signals to the created processes, without killing the test-suite process
     , create_group = True
     }

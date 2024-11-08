@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module HaskellWorks.Polysemy.Hedgehog.Workspace.Types
   ( PackagePath(..),
     ProjectRoot(..),
