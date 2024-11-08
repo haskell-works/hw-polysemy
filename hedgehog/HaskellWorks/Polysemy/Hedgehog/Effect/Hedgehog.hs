@@ -1,4 +1,3 @@
-{-# LANGUAGE GADTs           #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module HaskellWorks.Polysemy.Hedgehog.Effect.Hedgehog

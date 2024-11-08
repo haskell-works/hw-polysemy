@@ -32,8 +32,7 @@ readJsonFile filePath = withFrozenCallStack $ do
   info $ "Reading JSON file: " <> T.pack filePath
   contents <- LBS.readFile filePath
   J.eitherDecode contents
-    & onLeft (throw . JsonDecodeError)
-
+    & onLeft (throw . newJsonDecodeError)
 
 -- | Read the 'filePath' file as YAML.
 readYamlFile :: forall a r. ()
@@ -50,4 +49,4 @@ readYamlFile filePath = withFrozenCallStack $ do
   info $ "Reading YAML file: " <> T.pack filePath
   contents <- LBS.toStrict <$> LBS.readFile filePath
   Y.decodeEither' contents
-    & onLeft (throw . YamlDecodeError . Y.prettyPrintParseException)
+    & onLeft (throw . YamlDecodeError . T.pack . Y.prettyPrintParseException)

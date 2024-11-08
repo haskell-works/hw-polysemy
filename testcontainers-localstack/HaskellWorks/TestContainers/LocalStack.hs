@@ -1,7 +1,3 @@
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE OverloadedStrings  #-}
-
 {- HLINT ignore "Use camelCase" -}
 
 module HaskellWorks.TestContainers.LocalStack (

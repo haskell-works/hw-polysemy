@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeApplications #-}
-
 module HaskellWorks.Polysemy.HedgehogSpec
   ( hprop_example_property,
     hprop_example_test,

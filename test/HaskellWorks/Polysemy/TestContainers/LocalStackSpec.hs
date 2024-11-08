@@ -1,6 +1,3 @@
-{-# LANGUAGE GADTs             #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 {- HLINT ignore "Use let" -}
 
 module HaskellWorks.Polysemy.TestContainers.LocalStackSpec

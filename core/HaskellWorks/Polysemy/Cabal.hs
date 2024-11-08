@@ -72,14 +72,14 @@ binDist pkg = do
   planJsonFile <- getPlanJsonFile
   contents <- LBS.readFile planJsonFile
 
-  case eitherDecode contents of
-    Right plan -> case L.filter matching (plan & installPlan) of
-      (component:_) -> case component & binFile of
+  case eitherDecode @Plan contents of
+    Right plan -> case L.filter matching plan.installPlan of
+      (component:_) -> case component.binFile of
         Just bin -> return $ addExeSuffix (T.unpack bin)
         Nothing  -> throw $ GenericError $ "Missing bin-file in " <> tshow component
       [] -> throw $ GenericError $ "Cannot find exe " <> tshow pkg <> " in plan"
     Left msg -> throw $ GenericError $ "Cannot decode plan: " <> T.pack msg
   where matching :: Component -> Bool
-        matching component = case componentName component of
+        matching component = case component.componentName of
           Just name -> name == "exe:" <> T.pack pkg
           Nothing   -> False
