@@ -1,10 +1,26 @@
+-- | For the diff functions in this module: If CREATE_GOLDEN_FILES environment is
+-- set to "1", then should the golden file not exist it would be created.  If
+-- RECREATE_GOLDEN_FILES is set to "1", then should the golden file exist it would
+-- be recreated. If GOLDEN_FILE_LOG_FILE is set to a filename, then the golden file
+-- path will be logged to the specified file.
+--
+-- Set the environment variable when you intend to generate or re-generate the golden
+-- file for example when running the test for the first time or if the golden file
+-- genuinely needs to change.
+--
+-- To re-generate a golden file you must also delete the golden file because golden
+-- files are never overwritten
+
 module HaskellWorks.Polysemy.Hedgehog.Golden
   ( diffVsGoldenFile,
     diffFileVsGoldenFile,
+    diffJsonVsGoldenFile,
+    diffYamlVsGoldenFile,
   ) where
 
 import           Control.Applicative
 import           Control.Monad
+import qualified Data.Aeson                                    as J
 import           Data.Algorithm.Diff                           (PolyDiff (Both),
                                                                 getGroupedDiff)
 import           Data.Algorithm.DiffOutput                     (ppDiff)
@@ -14,14 +30,19 @@ import           Data.Function
 import           Data.Maybe
 import           Data.Monoid
 import           Data.String
+import qualified Data.Text                                     as T
+import qualified Data.Text.Encoding                            as T
 import           GHC.Stack                                     (callStack)
 import           HaskellWorks.Polysemy.Hedgehog.Assert
 import           HaskellWorks.Polysemy.Hedgehog.Jot
 import           System.FilePath                               (takeDirectory)
 
 import qualified Control.Concurrent.QSem                       as IO
+import qualified Data.ByteString.Lazy                          as LBS
 import qualified Data.List                                     as List
+import           Data.Yaml                                     as Y
 import qualified HaskellWorks.Polysemy.Control.Concurrent.QSem as PIO
+import           HaskellWorks.Polysemy.Data.ByteString         as PBS
 import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory        as PIO
 import           HaskellWorks.Polysemy.System.IO               as PIO
@@ -67,6 +88,20 @@ writeGoldenFile goldenFile actualContent = withFrozenCallStack $ do
   PIO.createDirectoryIfMissing True (takeDirectory goldenFile)
   PIO.writeFile goldenFile actualContent
 
+writeByteStringGoldenFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Embed IO) r
+  => Member (Error IOException) r
+  => Member Log r
+  => FilePath
+  -> ByteString
+  -> Sem r ()
+writeByteStringGoldenFile goldenFile bs = withFrozenCallStack $ do
+  jot_ $ "Creating golden file " <> goldenFile
+  PIO.createDirectoryIfMissing True (takeDirectory goldenFile)
+  PBS.writeFile goldenFile bs
+
 reportGoldenFileMissing :: ()
   => HasCallStack
   => Member Hedgehog r
@@ -105,18 +140,7 @@ checkAgainstGoldenFile goldenFile actualLines = withFrozenCallStack $ do
         ]
       failMessage callStack $ ppDiff difference
 
--- | Diff contents against the golden file.  If CREATE_GOLDEN_FILES environment is
--- set to "1", then should the golden file not exist it would be created.  If
--- RECREATE_GOLDEN_FILES is set to "1", then should the golden file exist it would
--- be recreated. If GOLDEN_FILE_LOG_FILE is set to a filename, then the golden file
--- path will be logged to the specified file.
---
--- Set the environment variable when you intend to generate or re-generate the golden
--- file for example when running the test for the first time or if the golden file
--- genuinely needs to change.
---
--- To re-generate a golden file you must also delete the golden file because golden
--- files are never overwritten.
+-- | Diff contents against the golden file.
 --
 -- TODO: Improve the help output by saying the difference of
 -- each input.
@@ -147,17 +171,63 @@ diffVsGoldenFile actualContent goldenFile = withFrozenCallStack $ do
   where
     actualLines = List.lines actualContent
 
--- | Diff file against the golden file.  If CREATE_GOLDEN_FILES environment is
--- set to "1", then should the gold file not exist it would be created.  If
--- GOLDEN_FILE_LOG_FILE is set to a filename, then the golden file path will be
--- logged to the specified file.
---
--- Set the environment variable when you intend to generate or re-generate the golden
--- file for example when running the test for the first time or if the golden file
--- genuinely needs to change.
---
--- To re-generate a golden file you must also delete the golden file because golden
--- files are never overwritten.
+-- | Diff utf8 bytestring contents against the golden file.
+diffByteStringVsGoldenFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Embed IO) r
+  => Member Resource r
+  => Member Log r
+  => ByteString -- ^ Actual content
+  -> FilePath -- ^ Reference file
+  -> Sem r ()
+diffByteStringVsGoldenFile bs goldenFile = withFrozenCallStack $ do
+  forM_ mGoldenFileLogFile $ \logFile ->
+    PIO.bracketQSem sem $
+      PIO.appendFile logFile (goldenFile <> "\n")
+        & trapFail @IOException
+
+  fileExists <- PIO.doesFileExist goldenFile
+    & trapFail @IOException
+
+  if
+    | recreateGoldenFiles -> writeByteStringGoldenFile goldenFile bs        & trapFail @IOException
+    | fileExists          -> checkAgainstGoldenFile goldenFile actualLines  & trapFail @IOException
+    | createGoldenFiles   -> writeByteStringGoldenFile goldenFile bs        & trapFail @IOException
+    | otherwise           -> reportGoldenFileMissing goldenFile             & trapFail @IOException
+
+  where
+    actualLines = List.lines $ T.unpack $ T.decodeUtf8 bs
+
+-- | Diff JSON against the golden file.
+diffJsonVsGoldenFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Embed IO) r
+  => Member Resource r
+  => Member Log r
+  => ToJSON a
+  => a -- ^ Actual content
+  -> FilePath -- ^ Reference file
+  -> Sem r ()
+diffJsonVsGoldenFile a goldenFile = withFrozenCallStack $
+  diffByteStringVsGoldenFile (LBS.toStrict (J.encode a)) goldenFile
+
+-- | Diff YAML against the golden file.
+diffYamlVsGoldenFile :: ()
+  => HasCallStack
+  => Member Hedgehog r
+  => Member (Embed IO) r
+  => Member Resource r
+  => Member Log r
+  => ToJSON a
+  => a -- ^ Actual content
+  -> FilePath -- ^ Reference file
+  -> Sem r ()
+diffYamlVsGoldenFile a goldenFile = withFrozenCallStack $
+  diffByteStringVsGoldenFile (Y.encode a) goldenFile
+
+-- | Diff file against the golden file.
 diffFileVsGoldenFile :: ()
   => HasCallStack
   => Member (Embed IO) r
