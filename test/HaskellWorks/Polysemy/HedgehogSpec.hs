@@ -9,6 +9,7 @@ import qualified Data.List                           as L
 import qualified HaskellWorks.Polysemy.Data.Text     as T
 import           HaskellWorks.Polysemy.Hedgehog
 import           HaskellWorks.Polysemy.Hedgehog.Test
+import           System.FilePath                     ((</>))
 
 default (String)
 

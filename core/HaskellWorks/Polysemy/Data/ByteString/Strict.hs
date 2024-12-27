@@ -172,8 +172,7 @@ import qualified Control.Exception             as CE
 import qualified Data.ByteString               as BS
 import qualified Data.Text                     as Text
 import qualified Data.Text.Encoding            as Text
-import           GHC.Foreign                   (CString, CStringLen)
-import           GHC.IO.Handle                 (Handle)
+import           Foreign.C.String              (CString, CStringLen)
 import           HaskellWorks.Polysemy.Prelude
 
 import           Polysemy
