@@ -3,6 +3,7 @@ packages: .
 allow-newer:
   base,
   bytestring,
+  containers,
 
 package testcontainers
   ghc-options: -XDuplicateRecordFields

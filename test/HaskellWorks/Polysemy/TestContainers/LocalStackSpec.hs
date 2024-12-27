@@ -25,10 +25,13 @@ import qualified TestContainers.Tasty                      as TC
 isWindows :: Bool
 isWindows = OS.os == "mingw32"
 
+isMacos :: Bool
+isMacos = OS.os == "darwin"
+
 tasty_local_stack :: Tasty.TestTree
 tasty_local_stack =
-  if isWindows
-    then Tasty.testGroup "LocalStackSpec skipped on Windows" []
+  if isWindows || isMacos
+    then Tasty.testGroup "LocalStackSpec skipped on Windows and MacOS" []
     else
       TC.withContainers (setupContainers' "localstack/localstack-pro:3.7.2") $ \getContainer ->
         H.testProperty "Local stack test" $ propertyOnce $ runLocalTestEnv getContainer $ do

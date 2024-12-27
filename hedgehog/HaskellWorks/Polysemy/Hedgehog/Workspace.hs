@@ -19,6 +19,7 @@ import           HaskellWorks.Polysemy.System.IO.Temp
 import           Polysemy
 import           Polysemy.Log
 import           Polysemy.Reader
+import           System.FilePath                                ((</>))
 import           System.Info
 
 import qualified HaskellWorks.Polysemy.System.IO                as PIO

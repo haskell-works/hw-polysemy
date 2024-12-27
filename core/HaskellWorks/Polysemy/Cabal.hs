@@ -10,7 +10,8 @@ import           HaskellWorks.Polysemy.Error.Types
 import           HaskellWorks.Polysemy.Prelude
 import           HaskellWorks.Polysemy.System.Directory
 import           HaskellWorks.Polysemy.System.Environment
-import           System.FilePath                            (takeDirectory)
+import           System.FilePath                            (takeDirectory,
+                                                             (</>))
 
 import           Data.Aeson
 import qualified Data.List                                  as L
