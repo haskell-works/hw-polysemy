@@ -36,7 +36,7 @@ common generic-lens               { build-depends: generic-lens                 
 common ghc-prim                   { build-depends: ghc-prim                                    < 0.14   }
 common hedgehog                   { build-depends: hedgehog                                    < 1.6    }
 common http-conduit               { build-depends: http-conduit               >= 2.3        && < 2.4    }
-common hw-prelude                 { build-depends: hw-prelude                 >= 0.0.1.0    && < 0.1    }
+common hw-prelude                 { build-depends: hw-prelude                 >= 0.0.4.2    && < 0.1    }
 common microlens                  { build-depends: microlens                                   < 5      }
 common lens                       { build-depends: lens                                        < 5.4    }
 common mtl                        { build-depends: mtl                                         < 2.6    }
